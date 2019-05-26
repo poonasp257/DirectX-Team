@@ -5,3 +5,4 @@
 ## 3. Reference: ![ref](https://user-images.githubusercontent.com/39629336/58378804-23fc2700-7fd5-11e9-8718-0d1554978142.jpg)
 
 ## 4. Member: Lee JunYoung, Ha TaeHun
+## 5. Deadline: ~ 2019. 6. 18.
