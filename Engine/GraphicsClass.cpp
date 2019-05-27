@@ -54,24 +54,22 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd, Inp
 	}
 
 	// Set the initial position of the camera.
-	m_Camera->SetPosition(0.0f, 0.0f, -400.0f);
+	m_Camera->SetPosition(0.0f, 0.0f, -20.0f);
 
 	char* fileNames[] = {
-		"../Engine/data/Earth.obj",
-		"../Engine/data/Neptune.obj",
-		"../Engine/data/Jupiter.obj",
-		"../Engine/data/GX7 interceptor.obj"
+		"../Engine/data/human.obj",
+		"../Engine/data/N916MU.obj",
+		"../Engine/data/M8 Ape Marauder.obj"
 	};
 
 	WCHAR* textures[] = {
-		L"../Engine/data/earth.dds",
-		L"../Engine/data/13908_Neptune_planet_diff.dds",
-		L"../Engine/data/Jupiter_diff.dds",
-		L"../Engine/data/cp1.dds"
+		L"../Engine/data/human.dds",
+		L"../Engine/data/N916MU.dds",
+		L"../Engine/data/M8 Ape Marauder.dds"
 	};
 
 	// Create the model object.
-	for (int i = 0; i < 4; ++i)
+	for (int i = 0; i < 3; ++i)
 	{
 		ModelClass* newModel = new ModelClass;
 		result = newModel->Initialize(m_D3D->GetDevice(), fileNames[i], textures[i]);
@@ -107,7 +105,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd, Inp
 	}
 
 	// Initialize the light object.
-	m_Light->SetAmbientColor(0.25f, 0.15f, 0.15f, 1.0f);
+	m_Light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
 	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetDirection(0.0f, 0.0f, 1.0f);
 	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -131,7 +129,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd, Inp
 	}
 	// Initialize the bitmap object.
 	result = m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight,
-		L"../Engine/data/Sky.dds", screenWidth, screenHeight);
+		L"../Engine/data/background.dds", screenWidth, screenHeight);
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
@@ -153,7 +151,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd, Inp
 	{
 		MessageBox(hwnd, L"Could not initialize the text object.", L"Error", MB_OK);
 		return false;
-	}	m_Text->TurnOnOffRenderInfo();
+	}
 	return true;
 }
 
@@ -230,7 +228,7 @@ void GraphicsClass::Shutdown()
 bool GraphicsClass::Frame(int fps, float frameTime, int cpu, int screenWidth, int screenHeight)
 {
 	bool result;
-	const float cameraSpeed = 0.2f;
+	const float cameraSpeed = 20.0f;
 
 	int deltaX, deltaY;
 	m_Input->GetMouseDeltaPosition(deltaX, deltaY);
@@ -243,7 +241,7 @@ bool GraphicsClass::Frame(int fps, float frameTime, int cpu, int screenWidth, in
 	if (m_Input->GetKey(KeyCode::S)) m_Camera->MoveForward(-cameraSpeed * frameTime);
 	if (m_Input->GetKey(KeyCode::D)) m_Camera->Strafe(cameraSpeed * frameTime);
 
-	//if (m_Input->GetKeyDown(KeyCode::F1)) m_Text->TurnOnOffRenderInfo();
+	if (m_Input->GetKeyDown(KeyCode::F1)) m_Text->TurnOnOffRenderInfo();
 
 	// Set the frames per second.
 	result = m_Text->SetFPS(fps, m_D3D->GetDeviceContext());
@@ -296,10 +294,9 @@ bool GraphicsClass::Render()
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
 	vector<D3DXMATRIX> objectMatrices(m_Models.size());
 	vector<D3DXVECTOR3> positions({
-		{ -831.0f, 304.0f, 120.0f},
-		{ 340.0f, 130.0f, 1.0f},
-		{ 1100.0f, -1331.0f, 120.0f},
-		{ 0.0f, 800.0f, 20.0f},
+		{ 1.0f, 1.0f, 1.0f},
+		{ 400.0f, 1.0f, 1.0f},
+		{ 1000.0f, 1.0f, 0.0f},
 	});
 		
 	// Clear the buffers to begin the scene.
@@ -348,19 +345,12 @@ bool GraphicsClass::Render()
 	// Turn the Z buffer back on now that all 2D rendering has completed.
 	m_D3D->TurnZBufferOn();
 
-
 	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	for (int i= 0; i < m_Models.size(); ++i)
 	{
-		D3DXMATRIX mat;
-		D3DXMatrixScaling(&mat, 0.1f, 0.1f, 0.1f);
-
 		objectMatrices[i] = worldMatrix;
-
 		D3DXMatrixTranslation(&objectMatrices[i],
 			positions[i].x, positions[i].y, positions[i].z);
-
-		objectMatrices[i] = objectMatrices[i] * mat;
 
 		m_Models[i]->Render(m_D3D->GetDeviceContext());
 		// Render the model using the light shader.
