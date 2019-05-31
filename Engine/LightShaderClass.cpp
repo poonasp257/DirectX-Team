@@ -41,7 +41,6 @@ bool LightShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 	return true;
 }
 
-
 void LightShaderClass::Shutdown()
 {
 	// Shutdown the vertex and pixel shaders as well as the related objects.
@@ -49,7 +48,6 @@ void LightShaderClass::Shutdown()
 
 	return;
 }
-
 
 bool LightShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix,
 	D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture,

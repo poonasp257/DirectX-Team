@@ -153,6 +153,7 @@
   <ItemGroup>
     <ClCompile Include="BitmapClass.cpp" />
     <ClCompile Include="CameraClass.cpp" />
+    <ClCompile Include="colorshaderclass.cpp" />
     <ClCompile Include="CPUClass.cpp" />
     <ClCompile Include="fontclass.cpp" />
     <ClCompile Include="fontshaderclass.cpp" />
@@ -166,6 +167,7 @@
     <ClCompile Include="soundClass.cpp" />
     <ClCompile Include="SystemClass.cpp" />
     <ClCompile Include="LightClass.cpp" />
+    <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="textclass.cpp" />
     <ClCompile Include="TextureClass.cpp" />
     <ClCompile Include="Textureshaderclass.cpp" />
@@ -174,6 +176,7 @@
   <ItemGroup>
     <ClInclude Include="BitmapClass.h" />
     <ClInclude Include="CameraClass.h" />
+    <ClInclude Include="colorshaderclass.h" />
     <ClInclude Include="CPUClass.h" />
     <ClInclude Include="fontclass.h" />
     <ClInclude Include="fontshaderclass.h" />
@@ -186,12 +189,15 @@
     <ClInclude Include="ModelClass.h" />
     <ClInclude Include="soundClass.h" />
     <ClInclude Include="SystemClass.h" />
+    <ClInclude Include="Terrain.h" />
     <ClInclude Include="textclass.h" />
     <ClInclude Include="TextureClass.h" />
     <ClInclude Include="Textureshaderclass.h" />
     <ClInclude Include="TimerClass.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="color.ps" />
+    <None Include="color.vs" />
     <None Include="light.ps" />
     <None Include="light.vs" />
   </ItemGroup>

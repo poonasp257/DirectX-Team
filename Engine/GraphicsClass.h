@@ -11,6 +11,8 @@
 #include "d3dclass.h"
 #include "cameraclass.h"
 #include "modelclass.h"
+#include "Terrain.h"
+#include "colorshaderclass.h"
 #include "lightshaderclass.h"
 #include "lightclass.h"
 #include "textureshaderclass.h"
@@ -46,14 +48,16 @@ private:
 	bool Render();
 
 private:
-	D3DClass* m_D3D;
-	InputClass* m_Input;
-	CameraClass* m_Camera;
+	D3DClass*				 m_D3D;
+	InputClass*				 m_Input;
+	CameraClass*			 m_Camera;
+	TerrainClass*			 m_Terrain;
+	TextClass*				 m_Text;
+	BitmapClass*			 m_Bitmap;
+	LightClass*				 m_Light;
+	LightShaderClass*		 m_LightShader;
+	ColorShaderClass*		 m_ColorShader;
+	TextureShaderClass*		 m_TextureShader;
 	std::vector<ModelClass*> m_Models;
-	LightShaderClass* m_LightShader;
-	LightClass* m_Light;
-	TextureShaderClass* m_TextureShader;
-	BitmapClass* m_Bitmap;
-	TextClass* m_Text;
 };
 #endif

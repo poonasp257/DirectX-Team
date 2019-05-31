@@ -7,12 +7,15 @@
 GraphicsClass::GraphicsClass()
 {
 	m_D3D = 0;
+	m_Input = 0;
 	m_Camera = 0;
-	m_LightShader = 0;
-	m_Light = 0;
-	m_TextureShader = 0;
-	m_Bitmap = 0;
+	m_Terrain = 0;
 	m_Text = 0;
+	m_Bitmap = 0;
+	m_Light = 0;
+	m_LightShader = 0;
+	m_ColorShader = 0;
+	m_TextureShader = 0;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass& other)
@@ -55,71 +58,37 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd, Inp
 
 	// Set the initial position of the camera.
 	m_Camera->SetPosition(0.0f, 0.0f, -20.0f);
-
-	char* fileNames[] = {
-		"../Engine/data/human.obj",
-		"../Engine/data/N916MU.obj",
-		"../Engine/data/M8 Ape Marauder.obj"
-	};
-
-	WCHAR* textures[] = {
-		L"../Engine/data/human.dds",
-		L"../Engine/data/N916MU.dds",
-		L"../Engine/data/M8 Ape Marauder.dds"
-	};
-
-	// Create the model object.
-	for (int i = 0; i < 3; ++i)
-	{
-		ModelClass* newModel = new ModelClass;
-		result = newModel->Initialize(m_D3D->GetDevice(), fileNames[i], textures[i]);
-		if (!result)
-		{
-			MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
-			return false;
-		}
-
-		m_Models.push_back(newModel);
-	}
-
-	// Create the light shader object.
-	m_LightShader = new LightShaderClass;
-	if(!m_LightShader)
+	// Initialize a base view matrix with the camera for 2D user interface rendering.
+	m_Camera->Render();
+	m_Camera->GetViewMatrix(baseViewMatrix);
+	
+	// Create the terrain object.
+	m_Terrain = new TerrainClass;
+	if (!m_Terrain)
 	{
 		return false;
 	}
 
-	// Initialize the light shader object.
-	result = m_LightShader->Initialize(m_D3D->GetDevice(), hwnd);
-	if(!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the light shader object.", L"Error", MB_OK);
-		return false;
-	}
-
-	// Create the light object.
-	m_Light = new LightClass;
-	if(!m_Light)
-	{
-		return false;
-	}
-
-	// Initialize the light object.
-	m_Light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
-	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetDirection(0.0f, 0.0f, 1.0f);
-	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetSpecularPower(32.0f);	// Create the texture shader object.
-	m_TextureShader = new TextureShaderClass;
-	if (!m_TextureShader)
-	{
-		return false;
-	}
-	// Initialize the texture shader object.
-	result = m_TextureShader->Initialize(m_D3D->GetDevice(), hwnd);
+	// Initialize the terrain object.
+	result = m_Terrain->Initialize(m_D3D->GetDevice());
 	if (!result)
 	{
-		MessageBox(hwnd, L"Could not initialize the texture shader object.", L"Error", MB_OK);
+		MessageBox(hwnd, L"Could not initialize the terrain object.", L"Error", MB_OK);
+		return false;
+	}
+
+	// Create the text object.
+	m_Text = new TextClass;
+	if (!m_Text)
+	{
+		return false;
+	}
+	// Initialize the text object.
+	result = m_Text->Initialize(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), hwnd, screenWidth,
+		screenHeight, baseViewMatrix);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the text object.", L"Error", MB_OK);
 		return false;
 	}	// Create the bitmap object.
 	m_Bitmap = new BitmapClass;
@@ -134,44 +103,78 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd, Inp
 	{
 		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
 		return false;
-	}	// Initialize a base view matrix with the camera for 2D user interface rendering.
-	m_Camera->Render();
-	m_Camera->GetViewMatrix(baseViewMatrix);
-	
-	// Create the text object.
-	m_Text = new TextClass;
-	if (!m_Text)
+	}	// Create the light object.
+	m_Light = new LightClass;
+	if (!m_Light)
 	{
 		return false;
 	}
-	// Initialize the text object.
-	result = m_Text->Initialize(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), hwnd, screenWidth,
-		screenHeight, baseViewMatrix);
+
+	// Initialize the light object.
+	m_Light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
+	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
+	m_Light->SetDirection(0.0f, 0.0f, 1.0f);
+	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
+	m_Light->SetSpecularPower(32.0f);	// Create the light shader object.
+	m_LightShader = new LightShaderClass;
+	if (!m_LightShader)
+	{
+		return false;
+	}
+
+	// Initialize the light shader object.
+	result = m_LightShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result)
 	{
-		MessageBox(hwnd, L"Could not initialize the text object.", L"Error", MB_OK);
+		MessageBox(hwnd, L"Could not initialize the light shader object.", L"Error", MB_OK);
 		return false;
+	}	// Create the color shader object.
+	m_ColorShader = new ColorShaderClass;
+	if (!m_ColorShader)
+	{
+		return false;
+	}
+
+	// Initialize the color shader object.
+	result = m_ColorShader->Initialize(m_D3D->GetDevice(), hwnd);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the color shader object.", L"Error", MB_OK);
+		return false;
+	}	// Create the texture shader object.
+	m_TextureShader = new TextureShaderClass;
+	if (!m_TextureShader)
+	{
+		return false;
+	}
+	// Initialize the texture shader object.
+	result = m_TextureShader->Initialize(m_D3D->GetDevice(), hwnd);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the texture shader object.", L"Error", MB_OK);
+		return false;
+	}	char* fileNames[] = { "" };
+
+	char* textures[] = { "" };
+
+	// Create the model object.
+	for (int i = 0; i < 0; ++i)
+	{
+		ModelClass* newModel = new ModelClass;
+		result = newModel->Initialize(m_D3D->GetDevice(), fileNames[i], textures[i]);
+		if (!result)
+		{
+			MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
+			return false;
+		}
+
+		m_Models.push_back(newModel);
 	}
 	return true;
 }
 
 void GraphicsClass::Shutdown()
 {
-	// Release the light object.
-	if(m_Light)
-	{
-		delete m_Light;
-		m_Light = 0;
-	}
-
-	// Release the light shader object.
-	if(m_LightShader)
-	{
-		m_LightShader->Shutdown();
-		delete m_LightShader;
-		m_LightShader = 0;
-	}
-
 	// Release the model object.
 	for (auto it = m_Models.begin(); it != m_Models.end(); )
 	{
@@ -182,6 +185,53 @@ void GraphicsClass::Shutdown()
 			it = m_Models.erase(it);
 		}
 		else ++it;
+	}
+
+	// Release the texture shader object.
+	if (m_TextureShader)
+	{
+		m_TextureShader->Shutdown();
+		delete m_TextureShader;
+		m_TextureShader = 0;
+	}
+
+	// Release the light shader object.
+	if (m_LightShader)
+	{
+		m_LightShader->Shutdown();
+		delete m_LightShader;
+		m_LightShader = 0;
+	}
+
+	// Release the light object.
+	if(m_Light)
+	{
+		delete m_Light;
+		m_Light = 0;
+	}
+
+	// Release the bitmap object.
+	if (m_Bitmap)
+	{
+		m_Bitmap->Shutdown();
+		delete m_Bitmap;
+		m_Bitmap = 0;
+	}
+
+	// Release the text object.
+	if (m_Text)
+	{
+		m_Text->Shutdown();
+		delete m_Text;
+		m_Text = 0;
+	}
+
+	// Release the terrain object.
+	if (m_Terrain)
+	{
+		m_Terrain->Shutdown();
+		delete m_Terrain;
+		m_Terrain = 0;
 	}
 
 	// Release the camera object.
@@ -198,30 +248,7 @@ void GraphicsClass::Shutdown()
 		delete m_D3D;
 		m_D3D = 0;
 	}
-
-	// Release the bitmap object.
-	if (m_Bitmap)
-	{
-		m_Bitmap->Shutdown();
-		delete m_Bitmap;
-		m_Bitmap = 0;
-	}
-	// Release the texture shader object.
-	if (m_TextureShader)
-	{
-		m_TextureShader->Shutdown();
-		delete m_TextureShader;
-		m_TextureShader = 0;
-	}
-
-	// Release the text object.
-	if (m_Text)
-	{
-		m_Text->Shutdown();
-		delete m_Text;
-		m_Text = 0;
-	}
-
+	
 	return;
 }
 
@@ -311,6 +338,13 @@ bool GraphicsClass::Render()
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 	m_D3D->GetOrthoMatrix(orthoMatrix);
 
+	// Render the terrain buffers.
+	m_Terrain->Render(m_D3D->GetDeviceContext());
+
+	result = m_ColorShader->Render(m_D3D->GetDeviceContext(), m_Terrain->GetIndexCount(), 
+		worldMatrix, viewMatrix, projectionMatrix);
+	if (!result) return false;
+
 	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	for (int i = 0; i < m_Models.size(); ++i)
 	{
@@ -358,10 +392,8 @@ bool GraphicsClass::Render()
 
 	// Turn off alpha blending after rendering the text.
 	m_D3D->TurnOffAlphaBlending();
-
 	// Turn the Z buffer back on now that all 2D rendering has completed.
 	m_D3D->TurnZBufferOn();
-
 	// Present the rendered scene to the screen.
 	m_D3D->EndScene();
 
