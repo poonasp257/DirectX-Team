@@ -1,12 +1,7 @@
-#ifndef _TERRAINCLASS_H_
-#define _TERRAINCLASS_H_
-//////////////
-// INCLUDES //
-//////////////
-#include <d3d11.h>
-#include <d3dx10math.h>
- 
-class TerrainClass
+#ifndef _TERRAIN_H_
+#define _TERRAIN_H_
+
+class Terrain
 {
 private:
 	struct VertexType
@@ -15,26 +10,47 @@ private:
 		D3DXVECTOR4 color;
 	};
 
-public:
-	TerrainClass();
-	TerrainClass(const TerrainClass&);
-	~TerrainClass();	
+	struct HeightMapType
+	{
+		float x, y, z;
+	};
 
-	bool Initialize(ID3D11Device*);
+	struct ModelType
+	{
+		float x, y, z;
+	};
+
+public:
+	Terrain();
+	Terrain(const Terrain&);
+	~Terrain();	
+
+	bool Initialize(ID3D11Device*, const char*);
 	void Shutdown();
 	void Render(ID3D11DeviceContext*);
 
 	int GetIndexCount();
 
 private:
+	bool LoadSetupFile(const char*);
+	bool LoadBitmapHeightMap();
+	void ShutdownHeightMap();
+	void SetTerrainCoordinates();
+	bool BuildTerrainModel();
+	void ShutdownTerrainModel();
+
 	bool InitializeBuffers(ID3D11Device*);
 	void ShutdownBuffers();
 	void RenderBuffers(ID3D11DeviceContext*);
-
+	int a;
 private:
-	int m_terrainWidth, m_terrainHeight;
-	int m_vertexCount, m_indexCount;
-	ID3D11Buffer *m_vertexBuffer, *m_indexBuffer;
+	ID3D11Buffer   *m_vertexBuffer, *m_indexBuffer;
+	HeightMapType  *m_heightMap;
+	ModelType	   *m_terrainModel;
+	int				m_vertexCount, m_indexCount;
+	int 			m_terrainHeight, m_terrainWidth;
+	float 			m_heightScale;
+	char		   *m_terrainFilename;
 };
 
 #endif

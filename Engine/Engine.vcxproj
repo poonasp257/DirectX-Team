@@ -18,6 +18,65 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Color.ps" />
+    <None Include="Color.vs" />
+    <None Include="Font.ps" />
+    <None Include="Font.vs" />
+    <None Include="Light.ps" />
+    <None Include="Light.vs" />
+    <None Include="Texture.ps" />
+    <None Include="Texture.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Bitmap.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="ColorShader.h" />
+    <ClInclude Include="CPU.h" />
+    <ClInclude Include="Direct3D.h" />
+    <ClInclude Include="Font.h" />
+    <ClInclude Include="FontShader.h" />
+    <ClInclude Include="FPS.h" />
+    <ClInclude Include="Graphics.h" />
+    <ClInclude Include="Input.h" />
+    <ClInclude Include="Light.h" />
+    <ClInclude Include="LightShader.h" />
+    <ClInclude Include="Model.h" />
+    <ClInclude Include="PCH.h" />
+    <ClInclude Include="Sound.h" />
+    <ClInclude Include="System.h" />
+    <ClInclude Include="Terrain.h" />
+    <ClInclude Include="Text.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="TextureShader.h" />
+    <ClInclude Include="Timer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Bitmap.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ColorShader.cpp" />
+    <ClCompile Include="CPU.cpp" />
+    <ClCompile Include="Direct3D.cpp" />
+    <ClCompile Include="Font.cpp" />
+    <ClCompile Include="FontShader.cpp" />
+    <ClCompile Include="FPS.cpp" />
+    <ClCompile Include="Graphics.cpp" />
+    <ClCompile Include="Input.cpp" />
+    <ClCompile Include="Light.cpp" />
+    <ClCompile Include="LightShader.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="PCH.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Sound.cpp" />
+    <ClCompile Include="System.cpp" />
+    <ClCompile Include="Terrain.cpp" />
+    <ClCompile Include="Text.cpp" />
+    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="TextureShader.cpp" />
+    <ClCompile Include="Timer.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{F048D73C-1396-42D2-84FB-0377594709D2}</ProjectGuid>
@@ -94,6 +153,8 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
       <DisableSpecificWarnings>4005</DisableSpecificWarnings>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>PCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -150,57 +211,6 @@
       <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="BitmapClass.cpp" />
-    <ClCompile Include="CameraClass.cpp" />
-    <ClCompile Include="colorshaderclass.cpp" />
-    <ClCompile Include="CPUClass.cpp" />
-    <ClCompile Include="fontclass.cpp" />
-    <ClCompile Include="fontshaderclass.cpp" />
-    <ClCompile Include="FPSClass.cpp" />
-    <ClCompile Include="LightShaderClass.cpp" />
-    <ClCompile Include="D3DClass.cpp" />
-    <ClCompile Include="GraphicsClass.cpp" />
-    <ClCompile Include="InputClass.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="ModelClass.cpp" />
-    <ClCompile Include="soundClass.cpp" />
-    <ClCompile Include="SystemClass.cpp" />
-    <ClCompile Include="LightClass.cpp" />
-    <ClCompile Include="Terrain.cpp" />
-    <ClCompile Include="textclass.cpp" />
-    <ClCompile Include="TextureClass.cpp" />
-    <ClCompile Include="Textureshaderclass.cpp" />
-    <ClCompile Include="TimerClass.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="BitmapClass.h" />
-    <ClInclude Include="CameraClass.h" />
-    <ClInclude Include="colorshaderclass.h" />
-    <ClInclude Include="CPUClass.h" />
-    <ClInclude Include="fontclass.h" />
-    <ClInclude Include="fontshaderclass.h" />
-    <ClInclude Include="FPSClass.h" />
-    <ClInclude Include="LightShaderClass.h" />
-    <ClInclude Include="D3DClass.h" />
-    <ClInclude Include="GraphicsClass.h" />
-    <ClInclude Include="InputClass.h" />
-    <ClInclude Include="LightClass.h" />
-    <ClInclude Include="ModelClass.h" />
-    <ClInclude Include="soundClass.h" />
-    <ClInclude Include="SystemClass.h" />
-    <ClInclude Include="Terrain.h" />
-    <ClInclude Include="textclass.h" />
-    <ClInclude Include="TextureClass.h" />
-    <ClInclude Include="Textureshaderclass.h" />
-    <ClInclude Include="TimerClass.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="color.ps" />
-    <None Include="color.vs" />
-    <None Include="light.ps" />
-    <None Include="light.vs" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
