@@ -54,8 +54,9 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, HWND hwnd, Input* i
 	}
 
 	// Set the initial position of the camera.
-	m_Camera->SetPosition(0.0f, 0.0f, 0.0f);
+	m_Camera->SetPosition(0.0f, 0.0f, -20.0f);
 	// Initialize a base view matrix with the camera for 2D user interface rendering.
+	m_Camera->Render();
 	m_Camera->GetViewMatrix(baseViewMatrix);
 	
 	// Create the terrain object.
@@ -399,8 +400,7 @@ bool Graphics::Render()
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 	m_D3D->GetOrthoMatrix(orthoMatrix);
-
-
+	
 	// 카메라 위치를 얻는다.
 	cameraPosition = m_Camera->GetPosition();
 	// 스카이 돔을 카메라 위치를 중심으로 변환합니다.
@@ -488,7 +488,7 @@ bool Graphics::Render()
 		return false;
 	}
 	
-	// Render the text strings.
+	//Render the text strings.
 	result = m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
 	if (!result)
 	{
@@ -499,7 +499,7 @@ bool Graphics::Render()
 	m_D3D->DisableAlphaBlending();
 	// Turn the Z buffer back on now that all 2D rendering has completed.
 	m_D3D->EnableZBuffer();
-	// Present the rendered scene to the screen.
+	//Present the rendered scene to the screen.
 	m_D3D->EndScene();
 
 	return true;
