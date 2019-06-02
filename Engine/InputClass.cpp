@@ -10,12 +10,13 @@ InputClass::InputClass()
 	m_mouse = 0;
 
 	m_keyState = {
-		{ KeyCode::W,		DIK_W },
-		{ KeyCode::A,		DIK_A },
-		{ KeyCode::S,		DIK_S },
-		{ KeyCode::D,		DIK_D },
+		{ KeyCode::W,	       	DIK_W },
+		{ KeyCode::A,	       	DIK_A },
+		{ KeyCode::S,	        DIK_S },
+		{ KeyCode::D, 	       	DIK_D },
 		{ KeyCode::Escape, DIK_ESCAPE },
-		{ KeyCode::F1,		DIK_F1}
+		{ KeyCode::F1,		    DIK_F1},
+		{ KeyCode::Shift,  DIK_LSHIFT }
 	};
 }
 

@@ -35,7 +35,7 @@ public:
 
 	bool Initialize(int, int, bool, HWND, bool, float, float);
 	void Shutdown();
-	
+
 	void BeginScene(float, float, float, float);
 	void EndScene();
 
@@ -50,9 +50,13 @@ public:
 
 	void TurnZBufferOn();
 	void TurnZBufferOff();
-
 	void TurnOnAlphaBlending();
 	void TurnOffAlphaBlending();
+	void TurnOnCulling();
+	void TurnOffCulling();
+
+	void EnableSecondBlendState();
+
 private:
 	bool m_vsync_enabled;
 	int m_videoCardMemory;
@@ -65,12 +69,14 @@ private:
 	ID3D11DepthStencilState* m_depthStencilState;
 	ID3D11DepthStencilView* m_depthStencilView;
 	ID3D11RasterizerState* m_rasterState;
+	ID3D11RasterizerState* m_rasterStateNoCulling;
 	D3DXMATRIX m_projectionMatrix;
 	D3DXMATRIX m_worldMatrix;
 	D3DXMATRIX m_orthoMatrix;
 	ID3D11DepthStencilState* m_depthDisabledStencilState;
 	ID3D11BlendState* m_alphaEnableBlendingState;
 	ID3D11BlendState* m_alphaDisableBlendingState;
+	ID3D11BlendState* m_alphaBlendState2;
 };
 
 #endif

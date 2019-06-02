@@ -22,7 +22,8 @@
 
 enum class KeyCode {
 	W, A, S, D,
-	Escape, F1
+	Escape, F1, Shift
+
 };
 
 class InputClass

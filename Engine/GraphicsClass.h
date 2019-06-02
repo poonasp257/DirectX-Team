@@ -17,6 +17,11 @@
 #include "bitmapclass.h"
 #include "textclass.h"
 #include "InputClass.h"
+#include "SkyDomeClass.h"
+#include "SkyDomeShaderClass.h"
+#include "skyplaneclass.h"
+#include "skyplaneshaderclass.h"
+
 
 #include <vector>
 
@@ -24,7 +29,7 @@
 // GLOBALS //
 /////////////
 const bool FULL_SCREEN = false;
-const bool VSYNC_ENABLED = false;
+const bool VSYNC_ENABLED = true;
 const float SCREEN_DEPTH = 1000.0f;
 const float SCREEN_NEAR = 0.1f;
 
@@ -55,5 +60,9 @@ private:
 	TextureShaderClass* m_TextureShader;
 	BitmapClass* m_Bitmap;
 	TextClass* m_Text;
+	SkyDomeClass* m_SkyDome;
+	SkyDomeShaderClass* m_SkyDomeShader;
+	SkyPlaneClass *m_SkyPlane;
+	SkyPlaneShaderClass* m_SkyPlaneShader;
 };
 #endif

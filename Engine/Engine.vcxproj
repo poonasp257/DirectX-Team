@@ -163,6 +163,10 @@
     <ClCompile Include="InputClass.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ModelClass.cpp" />
+    <ClCompile Include="SkyDomeClass.cpp" />
+    <ClCompile Include="SkyDomeShaderClass.cpp" />
+    <ClCompile Include="skyplaneclass.cpp" />
+    <ClCompile Include="skyplaneshaderclass.cpp" />
     <ClCompile Include="soundClass.cpp" />
     <ClCompile Include="SystemClass.cpp" />
     <ClCompile Include="LightClass.cpp" />
@@ -184,6 +188,10 @@
     <ClInclude Include="InputClass.h" />
     <ClInclude Include="LightClass.h" />
     <ClInclude Include="ModelClass.h" />
+    <ClInclude Include="SkyDomeClass.h" />
+    <ClInclude Include="SkyDomeShaderClass.h" />
+    <ClInclude Include="skyplaneclass.h" />
+    <ClInclude Include="skyplaneshaderclass.h" />
     <ClInclude Include="soundClass.h" />
     <ClInclude Include="SystemClass.h" />
     <ClInclude Include="textclass.h" />
@@ -194,6 +202,10 @@
   <ItemGroup>
     <None Include="light.ps" />
     <None Include="light.vs" />
+    <None Include="skydome.ps" />
+    <None Include="skydome.vs" />
+    <None Include="skyplane.ps" />
+    <None Include="skyplane.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
