@@ -13,6 +13,8 @@
 #include "Bitmap.h"
 #include "Terrain.h"
 #include "Model.h"
+#include "SkyDome.h"
+#include "SkyPlane.h"
 
 /////////////
 // GLOBALS //
@@ -45,8 +47,10 @@ private:
 	Bitmap				*m_Bitmap;
 	Light				*m_Light;
 	ShaderManager		*m_ShaderManager;
-	TextureManager		*m_TextureManager;
+	TextureManager		*m_TerrainTextures;
 	vector<Model*>		 m_Models;
+	SkyDome				*m_SkyDome;
+	SkyPlane			*m_SkyPlane;
 	bool				 m_wireFrame;
 };
 #endif

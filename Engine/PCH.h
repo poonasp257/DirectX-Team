@@ -28,9 +28,9 @@
 #include <stdlib.h>
 #include <mmsystem.h>
 #include <Pdh.h>
-#include <d3d11.h>
 #include <dxgi.h>
 #include <d3dcommon.h>
+#include <d3d11.h>
 #include <d3dx10math.h>
 #include <d3dx11tex.h>
 #include <d3dx11async.h>

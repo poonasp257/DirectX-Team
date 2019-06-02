@@ -189,7 +189,7 @@ void System::Run()
 			}
 
 			// Check if the user pressed escape and wants to quit.
-			if (m_Input->GetKeyDown(KeyCode::Escape))
+			if (m_Input->GetKeyDown(KeyCode::ESCAPE))
 			{
 				done = true;
 			}

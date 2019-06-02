@@ -3,7 +3,8 @@
 
 enum class KeyCode {
 	W, A, S, D,
-	Escape, F1, F2
+	ESCAPE, LSHFIT,
+	F1, F2, 
 };
 
 class Input

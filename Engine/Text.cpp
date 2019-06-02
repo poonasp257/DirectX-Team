@@ -5,7 +5,7 @@ Text::Text()
 {
 	m_Font = 0;
 	m_FontShader = 0;
-	isEnableRenderInfo = false;
+	isEnableRenderInfo = true;
 }
 
 Text::Text(const Text& other)

@@ -12,7 +12,8 @@ Input::Input()
 		{ KeyCode::A,		DIK_A },
 		{ KeyCode::S,		DIK_S },
 		{ KeyCode::D,		DIK_D },
-		{ KeyCode::Escape, DIK_ESCAPE },
+		{ KeyCode::ESCAPE,  DIK_ESCAPE },
+		{ KeyCode::LSHFIT,	DIK_LSHIFT},
 		{ KeyCode::F1,		DIK_F1},
 		{ KeyCode::F2,		DIK_F2}
 	};

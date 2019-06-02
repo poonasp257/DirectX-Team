@@ -25,6 +25,10 @@
     <None Include="Font.vs" />
     <None Include="Light.ps" />
     <None Include="Light.vs" />
+    <None Include="SkyDome.ps" />
+    <None Include="SkyDome.vs" />
+    <None Include="SkyPlane.ps" />
+    <None Include="SkyPlane.vs" />
     <None Include="Texture.ps" />
     <None Include="Texture.vs" />
   </ItemGroup>
@@ -44,6 +48,10 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="PCH.h" />
     <ClInclude Include="ShaderManager.h" />
+    <ClInclude Include="SkyDome.h" />
+    <ClInclude Include="SkyDomeShader.h" />
+    <ClInclude Include="SkyPlane.h" />
+    <ClInclude Include="SkyPlaneShader.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="Terrain.h" />
@@ -72,6 +80,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ShaderManager.cpp" />
+    <ClCompile Include="SkyDome.cpp" />
+    <ClCompile Include="SkyDomeShader.cpp" />
+    <ClCompile Include="SkyPlane.cpp" />
+    <ClCompile Include="SkyPlaneShader.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="System.cpp" />
     <ClCompile Include="Terrain.cpp" />
