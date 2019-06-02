@@ -25,7 +25,7 @@ private:
 	};
 
 	struct SentenceData {
-		std::string msg;
+		string msg;
 		int posX, posY;
 		float r, g, b;
 	};
@@ -58,7 +58,7 @@ private:
 	D3DXMATRIX					m_baseViewMatrix;
 	Font*						m_Font;
 	FontShader*					m_FontShader;
-	std::vector<SentenceType*>  m_renderInfo;
+	vector<SentenceType*>		m_renderInfo;
 	int							m_screenWidth, m_screenHeight;
 	bool						isEnableRenderInfo;
 };

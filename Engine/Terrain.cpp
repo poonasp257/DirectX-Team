@@ -39,6 +39,13 @@ bool Terrain::Initialize(ID3D11Device* device, const char* setupFileName)
 	// Setup the X and Z coordinates for the height map as well as scale the terrain height by the height scale value.
 	SetTerrainCoordinates();
 
+	// Calculate the normals for the terrain data.
+	result = CalculateNormals();
+	if (!result)
+	{
+		return false;
+	}
+
 	// Now build the 3D model of the terrain.
 	result = BuildTerrainModel();
 	if (!result)
@@ -90,7 +97,7 @@ int Terrain::GetIndexCount()
 bool Terrain::LoadSetupFile(const char* filename)
 {
 	int stringLength;
-	std::ifstream fin;
+	ifstream fin;
 	char input;
 
 	// Initialize the string that will hold the terrain file name.
@@ -302,6 +309,137 @@ void Terrain::SetTerrainCoordinates()
 	return;
 }
 
+bool Terrain::CalculateNormals()
+{
+	int index1, index2, index3, index;
+	float vertex1[3], vertex2[3], vertex3[3], vector1[3], vector2[3], sum[3], length;
+	VectorType* normals;
+	
+	// Create a temporary array to hold the face normal vectors.
+	normals = new VectorType[(m_terrainHeight - 1) * (m_terrainWidth - 1)];
+	if (!normals)
+	{
+		return false;
+	}
+
+	// Go through all the faces in the mesh and calculate their normals.
+	for (int j = 0; j < (m_terrainHeight - 1); j++)
+	{
+		for (int i = 0; i < (m_terrainWidth - 1); i++)
+		{
+			index1 = ((j + 1) * m_terrainWidth) + i;      // Bottom left vertex.
+			index2 = ((j + 1) * m_terrainWidth) + (i + 1);  // Bottom right vertex.
+			index3 = (j * m_terrainWidth) + i;          // Upper left vertex.
+
+			// Get three vertices from the face.
+			vertex1[0] = m_heightMap[index1].x;
+			vertex1[1] = m_heightMap[index1].y;
+			vertex1[2] = m_heightMap[index1].z;
+
+			vertex2[0] = m_heightMap[index2].x;
+			vertex2[1] = m_heightMap[index2].y;
+			vertex2[2] = m_heightMap[index2].z;
+
+			vertex3[0] = m_heightMap[index3].x;
+			vertex3[1] = m_heightMap[index3].y;
+			vertex3[2] = m_heightMap[index3].z;
+
+			// Calculate the two vectors for this face.
+			vector1[0] = vertex1[0] - vertex3[0];
+			vector1[1] = vertex1[1] - vertex3[1];
+			vector1[2] = vertex1[2] - vertex3[2];
+			vector2[0] = vertex3[0] - vertex2[0];
+			vector2[1] = vertex3[1] - vertex2[1];
+			vector2[2] = vertex3[2] - vertex2[2];
+
+			index = (j * (m_terrainWidth - 1)) + i;
+
+			// Calculate the cross product of those two vectors to get the un-normalized value for this face normal.
+			normals[index].x = (vector1[1] * vector2[2]) - (vector1[2] * vector2[1]);
+			normals[index].y = (vector1[2] * vector2[0]) - (vector1[0] * vector2[2]);
+			normals[index].z = (vector1[0] * vector2[1]) - (vector1[1] * vector2[0]);
+
+			// Calculate the length.
+			length = (float)sqrt((normals[index].x * normals[index].x) + (normals[index].y * normals[index].y) +
+				(normals[index].z * normals[index].z));
+
+			// Normalize the final value for this face using the length.
+			normals[index].x = (normals[index].x / length);
+			normals[index].y = (normals[index].y / length);
+			normals[index].z = (normals[index].z / length);
+		}
+	}
+
+	// Now go through all the vertices and take a sum of the face normals that touch this vertex.
+	for (int j = 0; j < m_terrainHeight; j++)
+	{
+		for (int i = 0; i < m_terrainWidth; i++)
+		{
+			// Initialize the sum.
+			sum[0] = 0.0f;
+			sum[1] = 0.0f;
+			sum[2] = 0.0f;
+
+			// Bottom left face.
+			if (((i - 1) >= 0) && ((j - 1) >= 0))
+			{
+				index = ((j - 1) * (m_terrainWidth - 1)) + (i - 1);
+
+				sum[0] += normals[index].x;
+				sum[1] += normals[index].y;
+				sum[2] += normals[index].z;
+			}
+
+			// Bottom right face.
+			if ((i < (m_terrainWidth - 1)) && ((j - 1) >= 0))
+			{
+				index = ((j - 1) * (m_terrainWidth - 1)) + i;
+
+				sum[0] += normals[index].x;
+				sum[1] += normals[index].y;
+				sum[2] += normals[index].z;
+			}
+
+			// Upper left face.
+			if (((i - 1) >= 0) && (j < (m_terrainHeight - 1)))
+			{
+				index = (j * (m_terrainWidth - 1)) + (i - 1);
+
+				sum[0] += normals[index].x;
+				sum[1] += normals[index].y;
+				sum[2] += normals[index].z;
+			}
+
+			// Upper right face.
+			if ((i < (m_terrainWidth - 1)) && (j < (m_terrainHeight - 1)))
+			{
+				index = (j * (m_terrainWidth - 1)) + i;
+
+				sum[0] += normals[index].x;
+				sum[1] += normals[index].y;
+				sum[2] += normals[index].z;
+			}
+
+			// Calculate the length of this normal.
+			length = (float)sqrt((sum[0] * sum[0]) + (sum[1] * sum[1]) + (sum[2] * sum[2]));
+
+			// Get an index to the vertex location in the height map array.
+			index = (j * m_terrainWidth) + i;
+
+			// Normalize the final shared normal for this vertex and store it in the height map array.
+			m_heightMap[index].nx = (sum[0] / length);
+			m_heightMap[index].ny = (sum[1] / length);
+			m_heightMap[index].nz = (sum[2] / length);
+		}
+	}
+
+	// Release the temporary normals.
+	delete[] normals;
+	normals = 0;
+
+	return true;
+}
+
 bool Terrain::BuildTerrainModel()
 {
 	int i, j, index, index1, index2, index3, index4;
@@ -337,36 +475,66 @@ bool Terrain::BuildTerrainModel()
 			m_terrainModel[index].x = m_heightMap[index1].x;
 			m_terrainModel[index].y = m_heightMap[index1].y;
 			m_terrainModel[index].z = m_heightMap[index1].z;
+			m_terrainModel[index].tu = 0.0f;
+			m_terrainModel[index].tv = 0.0f;
+			m_terrainModel[index].nx = m_heightMap[index1].nx;
+			m_terrainModel[index].ny = m_heightMap[index1].ny;
+			m_terrainModel[index].nz = m_heightMap[index1].nz;
 			index++;
 
 			// Triangle 1 - Upper right.
 			m_terrainModel[index].x = m_heightMap[index2].x;
 			m_terrainModel[index].y = m_heightMap[index2].y;
 			m_terrainModel[index].z = m_heightMap[index2].z;
+			m_terrainModel[index].tu = 1.0f;
+			m_terrainModel[index].tv = 0.0f;
+			m_terrainModel[index].nx = m_heightMap[index2].nx;
+			m_terrainModel[index].ny = m_heightMap[index2].ny;
+			m_terrainModel[index].nz = m_heightMap[index2].nz;
 			index++;
 
 			// Triangle 1 - Bottom left.
 			m_terrainModel[index].x = m_heightMap[index3].x;
 			m_terrainModel[index].y = m_heightMap[index3].y;
 			m_terrainModel[index].z = m_heightMap[index3].z;
+			m_terrainModel[index].tu = 0.0f;
+			m_terrainModel[index].tv = 1.0f;
+			m_terrainModel[index].nx = m_heightMap[index3].nx;
+			m_terrainModel[index].ny = m_heightMap[index3].ny;
+			m_terrainModel[index].nz = m_heightMap[index3].nz;
 			index++;
 
 			// Triangle 2 - Bottom left.
 			m_terrainModel[index].x = m_heightMap[index3].x;
 			m_terrainModel[index].y = m_heightMap[index3].y;
 			m_terrainModel[index].z = m_heightMap[index3].z;
+			m_terrainModel[index].tu = 0.0f;
+			m_terrainModel[index].tv = 1.0f;
+			m_terrainModel[index].nx = m_heightMap[index3].nx;
+			m_terrainModel[index].ny = m_heightMap[index3].ny;
+			m_terrainModel[index].nz = m_heightMap[index3].nz;
 			index++;
 
 			// Triangle 2 - Upper right.
 			m_terrainModel[index].x = m_heightMap[index2].x;
 			m_terrainModel[index].y = m_heightMap[index2].y;
 			m_terrainModel[index].z = m_heightMap[index2].z;
+			m_terrainModel[index].tu = 1.0f;
+			m_terrainModel[index].tv = 0.0f;
+			m_terrainModel[index].nx = m_heightMap[index2].nx;
+			m_terrainModel[index].ny = m_heightMap[index2].ny;
+			m_terrainModel[index].nz = m_heightMap[index2].nz;
 			index++;
 
 			// Triangle 2 - Bottom right.
 			m_terrainModel[index].x = m_heightMap[index4].x;
 			m_terrainModel[index].y = m_heightMap[index4].y;
 			m_terrainModel[index].z = m_heightMap[index4].z;
+			m_terrainModel[index].tu = 1.0f;
+			m_terrainModel[index].tv = 1.0f;
+			m_terrainModel[index].nx = m_heightMap[index4].nx;
+			m_terrainModel[index].ny = m_heightMap[index4].ny;
+			m_terrainModel[index].nz = m_heightMap[index4].nz;
 			index++;
 		}
 	}
@@ -424,7 +592,8 @@ bool Terrain::InitializeBuffers(ID3D11Device* device)
 	for (i = 0; i < m_vertexCount; i++)
 	{
 		vertices[i].position = D3DXVECTOR3(m_terrainModel[i].x, m_terrainModel[i].y, m_terrainModel[i].z);
-		vertices[i].color = color;
+		vertices[i].texture = D3DXVECTOR2(m_terrainModel[i].tu, m_terrainModel[i].tv);
+		vertices[i].normal = D3DXVECTOR3(m_terrainModel[i].nx, m_terrainModel[i].ny, m_terrainModel[i].nz);
 		indices[i] = i;
 	}
 

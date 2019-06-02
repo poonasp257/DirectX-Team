@@ -215,7 +215,7 @@ void ColorShader::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, 
 {
 	char* compileErrors;
 	unsigned long bufferSize, i;
-	std::ofstream fout;
+	ofstream fout;
 
 	// Get a pointer to the error message text buffer.
 	compileErrors = (char*)(errorMessage->GetBufferPointer());

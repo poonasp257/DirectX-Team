@@ -39,9 +39,14 @@
 
 #include <fstream>
 #include <string>
-#include <utility>
 #include <vector>
 #include <map>
+
+using std::ifstream;
+using std::ofstream;
+using std::string;
+using std::vector;
+using std::map;
 
 /////////////////////
 //My Header Include//

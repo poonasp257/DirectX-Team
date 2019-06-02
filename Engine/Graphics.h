@@ -4,17 +4,15 @@
 ///////////////////////
 // MY CLASS INCLUDES //
 ///////////////////////
-#include "Direct3D.h"
-#include "Camera.h"
-#include "Model.h"
-#include "Terrain.h"
-#include "ColorShader.h"
-#include "LightShader.h"
-#include "Light.h"
-#include "TextureShader.h"
-#include "Bitmap.h"
-#include "Text.h"
 #include "Input.h"
+#include "Camera.h"
+#include "ShaderManager.h"
+#include "TextureManager.h"
+#include "Light.h"
+#include "Text.h"
+#include "Bitmap.h"
+#include "Terrain.h"
+#include "Model.h"
 
 /////////////
 // GLOBALS //
@@ -46,10 +44,9 @@ private:
 	Text				*m_Text;
 	Bitmap				*m_Bitmap;
 	Light				*m_Light;
-	LightShader			*m_LightShader;
-	ColorShader			*m_ColorShader;
-	TextureShader		*m_TextureShader;
-	std::vector<Model*>  m_Models;
+	ShaderManager		*m_ShaderManager;
+	TextureManager		*m_TextureManager;
+	vector<Model*>		 m_Models;
 	bool				 m_wireFrame;
 };
 #endif

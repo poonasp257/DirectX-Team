@@ -244,7 +244,7 @@ void Model::ReleaseTexture()
 
 bool Model::ReadFileCounts(WCHAR* fileName, int& vertexCount, int& textureCount, int& normalCount, int& faceCount)
 {
-	std::ifstream fin;
+	ifstream fin;
 	char input;
 
 	// Initialize the counts.
@@ -293,7 +293,7 @@ bool Model::ReadFileCounts(WCHAR* fileName, int& vertexCount, int& textureCount,
 
 bool Model::LoadModel(WCHAR* fileName)
 {
-	std::ifstream fin;
+	ifstream fin;
 	D3DXVECTOR3 *vertices, *texcoords, *normals;
 	FaceType *faces;
 	int vertexCount, textureCount, normalCount, faceCount;

@@ -33,7 +33,7 @@ private:
 	IDirectInputDevice8				   *m_keyboard;
 	IDirectInputDevice8				   *m_mouse;
 	DIMOUSESTATE						m_mouseState;
-	std::map<KeyCode, unsigned char>	m_keyState;
+	map<KeyCode, unsigned char>			m_keyState;
 	unsigned char						m_keyboardState[256];
 	unsigned char						m_pressedKeys[256];
 	int									m_screenWidth, m_screenHeight;

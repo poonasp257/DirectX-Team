@@ -10,9 +10,7 @@ Graphics::Graphics()
 	m_Text = 0;
 	m_Bitmap = 0;
 	m_Light = 0;
-	m_LightShader = 0;
-	m_ColorShader = 0;
-	m_TextureShader = 0;
+	m_ShaderManager = 0;
 }
 
 Graphics::Graphics(const Graphics& other)
@@ -54,7 +52,7 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, HWND hwnd, Input* i
 	}
 
 	// Set the initial position of the camera.
-	m_Camera->SetPosition(0.0f, 0.0f, -20.0f);
+	m_Camera->SetPosition(0.0f, 0.0f, 0.0f);
 	// Initialize a base view matrix with the camera for 2D user interface rendering.
 	m_Camera->Render();
 	m_Camera->GetViewMatrix(baseViewMatrix);
@@ -108,57 +106,62 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, HWND hwnd, Input* i
 	}
 
 	// Initialize the light object.
-	m_Light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
+	m_Light->SetAmbientColor(0.05f, 0.05f, 0.05f, 1.0f);
 	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetDirection(0.0f, 0.0f, 1.0f);
-	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetSpecularPower(32.0f);	// Create the light shader object.
-	m_LightShader = new LightShader;
-	if (!m_LightShader)
+	m_Light->SetDirection(-0.5f, -1.0f, -0.5f);
+	m_Light->SetSpecularColor(0.05f, 0.05f, 0.05f, 1.0f);
+	m_Light->SetSpecularPower(1.0f);	// Create the shader manager object.
+	m_ShaderManager = new ShaderManager;
+	if (!m_ShaderManager)
 	{
 		return false;
 	}
 
-	// Initialize the light shader object.
-	result = m_LightShader->Initialize(m_D3D->GetDevice(), hwnd);
+	// Initialize the shader manager object.
+	result = m_ShaderManager->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result)
 	{
-		MessageBox(hwnd, L"Could not initialize the light shader object.", L"Error", MB_OK);
+		MessageBox(hwnd, L"Could not initialize the shader manager object.", L"Error", MB_OK);
 		return false;
-	}	// Create the color shader object.
-	m_ColorShader = new ColorShader;
-	if (!m_ColorShader)
+	}	
+	const int NumOfTexture = 1;
+	const int NumOfModel = 1;
+	WCHAR* textures[NumOfTexture] = {
+		L"../Engine/data/ice.dds"
+	};
+	WCHAR*	models[NumOfModel] = {
+		L""
+	};
+
+	// Create the shader manager object.
+	m_TextureManager = new TextureManager;
+	if (!m_TextureManager)
 	{
 		return false;
 	}
 
-	// Initialize the color shader object.
-	result = m_ColorShader->Initialize(m_D3D->GetDevice(), hwnd);
+	// Initialize the texture manager object.
+	result = m_TextureManager->Initialize(NumOfTexture);
 	if (!result)
 	{
-		MessageBox(hwnd, L"Could not initialize the color shader object.", L"Error", MB_OK);
-		return false;
-	}	// Create the texture shader object.
-	m_TextureShader = new TextureShader;
-	if (!m_TextureShader)
-	{
+		MessageBox(hwnd, L"Could not initialize the texture manager object.", L"Error", MB_OK);
 		return false;
 	}
-	// Initialize the texture shader object.
-	result = m_TextureShader->Initialize(m_D3D->GetDevice(), hwnd);
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the texture shader object.", L"Error", MB_OK);
-		return false;
-	}	WCHAR* fileNames[] = { L"" };
 
-	WCHAR* textures[] = { L"" };
+	// Load textures into the texture manager.
+	for (int i = 0; i < NumOfTexture; ++i) {
+		result = m_TextureManager->LoadTexture(m_D3D->GetDevice(), textures[i], i);
+		if (!result)
+		{
+			return false;
+		}
+	}
 
 	// Create the model object.
 	for (int i = 0; i < 0; ++i)
 	{
 		Model* newModel = new Model;
-		result = newModel->Initialize(m_D3D->GetDevice(), fileNames[i], textures[i]);
+		result = newModel->Initialize(m_D3D->GetDevice(), models[i], textures[i]);
 		if (!result)
 		{
 			MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
@@ -185,20 +188,20 @@ void Graphics::Shutdown()
 		else ++it;
 	}
 
-	// Release the texture shader object.
-	if (m_TextureShader)
+	// Release the texture manager object.
+	if (m_TextureManager)
 	{
-		m_TextureShader->Shutdown();
-		delete m_TextureShader;
-		m_TextureShader = 0;
+		m_TextureManager->Shutdown();
+		delete m_TextureManager;
+		m_TextureManager = 0;
 	}
 
-	// Release the light shader object.
-	if (m_LightShader)
+	// Release the shader manager object.
+	if (m_ShaderManager)
 	{
-		m_LightShader->Shutdown();
-		delete m_LightShader;
-		m_LightShader = 0;
+		m_ShaderManager->Shutdown();
+		delete m_ShaderManager;
+		m_ShaderManager = 0;
 	}
 
 	// Release the light object.
@@ -317,8 +320,8 @@ bool Graphics::Render()
 	bool result;
 	const size_t NumOfObject = m_Models.size();
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
-	std::vector<D3DXMATRIX> objectMatrices(m_Models.size());
-	std::vector<D3DXVECTOR3> positions({
+	vector<D3DXMATRIX> objectMatrices(m_Models.size());
+	vector<D3DXVECTOR3> positions({
 		{ 1.0f, 1.0f, 1.0f},
 		{ 400.0f, 1.0f, 1.0f},
 		{ 1000.0f, 1.0f, 0.0f},
@@ -341,13 +344,14 @@ bool Graphics::Render()
 
 	// Render the terrain buffers.
 	m_Terrain->Render(m_D3D->GetDeviceContext());
-	result = m_ColorShader->Render(m_D3D->GetDeviceContext(), m_Terrain->GetIndexCount(),
-		worldMatrix, viewMatrix, projectionMatrix);
+	result = m_ShaderManager->RenderLightShader(m_D3D->GetDeviceContext(), m_Terrain->GetIndexCount(), worldMatrix, viewMatrix,
+		projectionMatrix, m_TextureManager->GetTexture(0), m_Light->GetDirection(),
+		m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Camera->GetPosition(),
+		m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
 	if (!result) return false;
 
 	// Turn off wire frame rendering of the terrain if it was on.
 	if (m_wireFrame) m_D3D->DisableWireframe();
-
 
 	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	for (int i = 0; i < m_Models.size(); ++i)
@@ -358,7 +362,7 @@ bool Graphics::Render()
 
 		m_Models[i]->Render(m_D3D->GetDeviceContext());
 		// Render the model using the light shader.
-		result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Models[i]->GetIndexCount(),
+		result = m_ShaderManager->RenderLightShader(m_D3D->GetDeviceContext(), m_Models[i]->GetIndexCount(),
 			objectMatrices[i], viewMatrix, projectionMatrix,
 			m_Models[i]->GetTexture(), m_Light->GetDirection(),
 			m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Camera->GetPosition(),

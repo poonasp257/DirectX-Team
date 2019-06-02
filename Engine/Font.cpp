@@ -49,7 +49,7 @@ void Font::Shutdown()
 
 bool Font::LoadFontData(char* filename)
 {
-	std::ifstream fin;
+	ifstream fin;
 	int i;
 	char temp;
 
