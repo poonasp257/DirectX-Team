@@ -19,7 +19,7 @@
 /////////////
 // GLOBALS //
 /////////////
-const bool FULL_SCREEN = false;
+const bool FULL_SCREEN = true;
 const bool VSYNC_ENABLED = true;
 const float SCREEN_DEPTH = 1000.0f;
 const float SCREEN_NEAR = 0.1f;
@@ -36,8 +36,8 @@ public:
 	bool Frame(int, float, int, int, int);
 
 private:
-	bool Render();
-
+	bool Render(int, int);
+	float rotation;
 private:
 	Direct3D			*m_D3D;
 	Input				*m_Input;

@@ -18,11 +18,11 @@ TextureShader::~TextureShader()
 {
 }
 
-bool TextureShader::Initialize(ID3D11Device* device, HWND hwnd)
+bool TextureShader::Initialize(ID3D11Device* device, HWND hwnd, D3DXMATRIX	baseViewMatrix)
 {
 	bool result;
 
-
+	m_baseViewMatrix = baseViewMatrix;
 	// Initialize the vertex and pixel shaders.
 	result = InitializeShader(device, hwnd, L"../Engine/texture.vs", L"../Engine/texture.ps");
 	if(!result)
@@ -41,13 +41,12 @@ void TextureShader::Shutdown()
 	return;
 }
 
-bool TextureShader::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, 
+bool TextureShader::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix,
 								D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture)
 {
 	bool result;
-
 	// Set the shader parameters that it will use for rendering.
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture);
+	result = SetShaderParameters(deviceContext, worldMatrix, m_baseViewMatrix , projectionMatrix, texture);
 	if(!result)
 	{
 		return false;

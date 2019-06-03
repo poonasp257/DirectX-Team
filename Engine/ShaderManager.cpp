@@ -16,7 +16,7 @@ ShaderManager::~ShaderManager()
 {
 }
 
-bool ShaderManager::Initialize(ID3D11Device* device, HWND hwnd)
+bool ShaderManager::Initialize(ID3D11Device* device, HWND hwnd, D3DXMATRIX	baseViewMatrix)
 {
 	bool result;
 
@@ -43,7 +43,7 @@ bool ShaderManager::Initialize(ID3D11Device* device, HWND hwnd)
 	}
 
 	// Initialize the texture shader object.
-	result = m_TextureShader->Initialize(device, hwnd);
+	result = m_TextureShader->Initialize(device, hwnd, baseViewMatrix);
 	if (!result)
 	{
 		return false;
@@ -161,10 +161,10 @@ bool ShaderManager::RenderColorShader(ID3D11DeviceContext* deviceContext, int in
 	return m_ColorShader->Render(deviceContext, indexCount, worldMatrix, viewMatrix, projectionMatrix);
 }
 
-bool ShaderManager::RenderTextureShader(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+bool ShaderManager::RenderTextureShader(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix,
 	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture)
 {
-	return m_TextureShader->Render(deviceContext, indexCount, worldMatrix, viewMatrix, projectionMatrix, texture);
+	return m_TextureShader->Render(deviceContext, indexCount, worldMatrix, projectionMatrix, texture);
 }
 
 bool ShaderManager::RenderFontShader(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,

@@ -13,6 +13,7 @@ Graphics::Graphics()
 	m_ShaderManager = 0;
 	m_SkyDome = 0;
 	m_SkyPlane = 0;
+	rotation = 0;
 }
 
 Graphics::Graphics(const Graphics& other)
@@ -55,7 +56,7 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, HWND hwnd, Input* i
 
 	// Set the initial position of the camera.
 	m_Camera->SetPosition(0.0f, 0.0f, -20.0f);
-	// Initialize a base view matrix with the camera for 2D user interface rendering.
+	// Initialize a base view matrix with the camera for 2D user interface rendering.
 	m_Camera->Render();
 	m_Camera->GetViewMatrix(baseViewMatrix);
 	
@@ -87,7 +88,9 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, HWND hwnd, Input* i
 	{
 		MessageBox(hwnd, L"Could not initialize the text object.", L"Error", MB_OK);
 		return false;
-	}	// Create the bitmap object.
+	}
+
+	// Create the bitmap object.
 	m_Bitmap = new Bitmap;
 	if (!m_Bitmap)
 	{
@@ -95,12 +98,14 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, HWND hwnd, Input* i
 	}
 	// Initialize the bitmap object.
 	result = m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight,
-		L"../Engine/data/crosshair.png", screenWidth, screenHeight);
+		L"../Engine/data/crosshair.png", screenHeight /10, screenHeight/10);
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
 		return false;
-	}	// Create the light object.
+	}
+
+	// Create the light object.
 	m_Light = new Light;
 	if (!m_Light)
 	{
@@ -112,7 +117,9 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, HWND hwnd, Input* i
 	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetDirection(-0.5f, -1.0f, 0.0f);
 	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetSpecularPower(5.0f);	// Create the shader manager object.
+	m_Light->SetSpecularPower(5.0f);
+
+	// Create the shader manager object.
 	m_ShaderManager = new ShaderManager;
 	if (!m_ShaderManager)
 	{
@@ -125,7 +132,8 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, HWND hwnd, Input* i
 	{
 		MessageBox(hwnd, L"Could not initialize the shader manager object.", L"Error", MB_OK);
 		return false;
-	}	
+	}
+	
 	WCHAR* terrainTextures[1] = {
 		L"../Engine/data/ice.dds"
 	};
@@ -180,7 +188,9 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, HWND hwnd, Input* i
 		}
 
 		m_Models.push_back(newModel);
-	}	// Create the skydome object.
+	}
+
+	// Create the skydome object.
 	m_SkyDome = new SkyDome;
 	if (!m_SkyDome)
 	{
@@ -194,7 +204,8 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, HWND hwnd, Input* i
 		MessageBox(hwnd, L"Could not initialize the sky dome object.", L"Error", MB_OK);
 		return false;
 	}
-	// Create the sky plane object.
+
+	// Create the sky plane object.
 	m_SkyPlane = new SkyPlane;
 	if (!m_SkyPlane)
 	{
@@ -208,8 +219,10 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, HWND hwnd, Input* i
 		MessageBox(hwnd, L"Could not initialize the sky plane object.", L"Error", MB_OK);
 		return false;
 	}
-		// Set wire frame rendering initially to enabled.
-	m_wireFrame = false;	
+	
+	// Set wire frame rendering initially to enabled.
+	m_wireFrame = false;
+	
 	return true;
 }
 
@@ -366,7 +379,7 @@ bool Graphics::Frame(int fps, float frameTime, int cpu, int screenWidth, int scr
 	m_SkyPlane->Frame();
 
 	// Render the graphics scene.
-	result = Render();
+	result = Render(screenWidth, screenHeight);
 	if(!result)
 	{
 		return false;
@@ -375,7 +388,7 @@ bool Graphics::Frame(int fps, float frameTime, int cpu, int screenWidth, int scr
 	return true;
 }
 
-bool Graphics::Render()
+bool Graphics::Render(int screenWidth, int screenHeight)
 {
 	bool result;
 	const size_t NumOfObject = m_Models.size();
@@ -383,9 +396,9 @@ bool Graphics::Render()
 	D3DXVECTOR3 cameraPosition;
 	vector<D3DXMATRIX> objectMatrices(m_Models.size());
 	vector<D3DXVECTOR3> positions({
-		{ -831.0f, 304.0f, 120.0f},
-		{ 340.0f, 130.0f, 1.0f},
-		{ 1100.0f, -1331.0f, 120.0f},
+		{ -840.0f, +204.0f, 820.0f},
+		{ 740.0f, 130.0f, -340.0f},
+		{ 1100.0f, -331.0f, 120.0f},
 		{ 0.0f, 800.0f, 20.0f},
 	});
 		
@@ -401,24 +414,24 @@ bool Graphics::Render()
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 	m_D3D->GetOrthoMatrix(orthoMatrix);
 	
-	// Ä«¸Þ¶ó À§Ä¡¸¦ ¾ò´Â´Ù.
+	// Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½Â´ï¿½.
 	cameraPosition = m_Camera->GetPosition();
-	// ½ºÄ«ÀÌ µ¼À» Ä«¸Þ¶ó À§Ä¡¸¦ Áß½ÉÀ¸·Î º¯È¯ÇÕ´Ï´Ù.
+	// ï¿½ï¿½Ä«ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ß½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Õ´Ï´ï¿½.
 	D3DXMatrixTranslation(&worldMatrix,
 		cameraPosition.x, cameraPosition.y, cameraPosition.z);
 
-	// Ç¥¸é ÄÃ¸µÀ» ²ü´Ï´Ù.
+	// Ç¥ï¿½ï¿½ ï¿½Ã¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï´ï¿½.
 	m_D3D->DisableCulling();
 	//// Turn off the Z buffer to begin all 2D rendering.
 	m_D3D->DisableZBuffer();
 
-	// ½ºÄ«ÀÌ µ¼ ¼ÎÀÌ´õ¸¦ »ç¿ëÇÏ¿© ÇÏ´Ã µ¼À» ·»´õ¸µÇÕ´Ï´Ù.
+	// ï¿½ï¿½Ä«ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
 	m_SkyDome->Render(m_D3D->GetDeviceContext());
 	result = m_ShaderManager->RenderSkyDomeShader(m_D3D->GetDeviceContext(), m_SkyDome->GetIndexCount(),
 		worldMatrix, viewMatrix, projectionMatrix, m_SkyDome->GetApexColor(), m_SkyDome->GetCenterColor());
 	if (!result) return false;
 
-	// ´Ù½Ã Ç¥¸é ÄÃ¸µÀ» µÇµ¹¸³´Ï´Ù.
+	// ï¿½Ù½ï¿½ Ç¥ï¿½ï¿½ ï¿½Ã¸ï¿½ï¿½ï¿½ ï¿½Çµï¿½ï¿½ï¿½ï¿½Ï´ï¿½.
 	m_D3D->EnableCulling();
 	// Enable additive blending so the clouds blend with the sky dome color.
 	m_D3D->EnableSecondBlendState();
@@ -454,9 +467,15 @@ bool Graphics::Render()
 	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	for (int i = 0; i < m_Models.size(); ++i)
 	{
+		D3DXMATRIX mat, rot;
+		rotation += 0.002f;
+		D3DXMatrixScaling(&mat, 0.1f, 0.1f, 0.1f);
 		objectMatrices[i] = worldMatrix;
+		D3DXMatrixRotationY(&rot, rotation);
 		D3DXMatrixTranslation(&objectMatrices[i],
 			positions[i].x, positions[i].y, positions[i].z);
+
+		objectMatrices[i] = rot * objectMatrices[i] * mat;
 
 		m_Models[i]->Render(m_D3D->GetDeviceContext());
 		// Render the model using the light shader.
@@ -474,7 +493,7 @@ bool Graphics::Render()
 	m_D3D->EnableAlphaBlending();
 
 	//Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	result = m_Bitmap->Render(m_D3D->GetDeviceContext(), 0, 0);
+	result = m_Bitmap->Render(m_D3D->GetDeviceContext(), screenWidth / 2 - screenHeight / 20, screenHeight / 2 - screenHeight / 20);
 	if (!result)
 	{
 		return false;
@@ -482,13 +501,13 @@ bool Graphics::Render()
 
 	//Render the bitmap with the texture shader.
 	result = m_ShaderManager->RenderTextureShader(m_D3D->GetDeviceContext(), m_Bitmap->GetIndexCount(),
-		worldMatrix, viewMatrix, orthoMatrix, m_Bitmap->GetTexture());
+		worldMatrix,  orthoMatrix, m_Bitmap->GetTexture());
 	if (!result)
 	{
 		return false;
 	}
 	
-	//Render the text strings.
+	// Render the text strings.
 	result = m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
 	if (!result)
 	{
@@ -499,7 +518,7 @@ bool Graphics::Render()
 	m_D3D->DisableAlphaBlending();
 	// Turn the Z buffer back on now that all 2D rendering has completed.
 	m_D3D->EnableZBuffer();
-	//Present the rendered scene to the screen.
+	// Present the rendered scene to the screen.
 	m_D3D->EndScene();
 
 	return true;
