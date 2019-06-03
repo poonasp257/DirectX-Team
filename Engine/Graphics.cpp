@@ -162,22 +162,34 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, HWND hwnd, Input* i
 		}
 	}
 
-	const int NumOfModel = 10;
+	const int NumOfModel = 11;
 	WCHAR* modelTextures[NumOfModel] = {
 		L"../Engine/data/earth.dds",
-		L"../Engine/data/13908_Neptune_planet_diff.dds",
+		L"../Engine/data/mars.dds",
 		L"../Engine/data/R2.dds",
 		L"../Engine/data/train.dds",
 		L"../Engine/data/Robo warrior.dds",
 		L"../Engine/data/orbiter bugship.dds",
+
+		L"../Engine/data/debris.dds",
+		L"../Engine/data/moon.dds",
+		L"../Engine/data/spaceship01.dds",
+		L"../Engine/data/spaceship02.dds",
+		L"../Engine/data/spaceship03.dds",
 	};
 	WCHAR*	models[NumOfModel] = {
 		L"../Engine/data/Earth.obj",
-		L"../Engine/data/Neptune.obj",
+		L"../Engine/data/Earth.obj",
 		L"../Engine/data/R2.obj",
 		L"../Engine/data/train.obj",
 		L"../Engine/data/Robo warrior.obj",
-		L"../Engine/data/orbiter bugship.obj"
+		L"../Engine/data/orbiter bugship.obj",
+
+		L"../Engine/data/debris.obj",
+		L"../Engine/data/Earth.obj",
+		L"../Engine/data/spaceship01.obj",
+		L"../Engine/data/spaceship02.obj",
+		L"../Engine/data/spaceship03.obj",
 	};
 
 	m_Gun = new Model;
@@ -190,7 +202,7 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, HWND hwnd, Input* i
 	}
 	
 	// Create the model object.
-	for (int i = 0; i < 6; ++i)
+	for (int i = 0; i < 10; ++i)
 	{
 		Model* newModel = new Model;
 		result = newModel->Initialize(m_D3D->GetDevice(), models[i], modelTextures[i]);
@@ -236,6 +248,9 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, HWND hwnd, Input* i
 	// Set wire frame rendering initially to enabled.
 	m_wireFrame = false;
 	
+	// Set the initial position of the camera.
+	m_Camera->SetPosition(200.0f, 10.0f, 100.0f);
+
 	return true;
 }
 
@@ -411,18 +426,30 @@ bool Graphics::Render(int screenWidth, int screenHeight)
 	vector<D3DXMATRIX> objectMatrices(m_Models.size());
 	vector<D3DXVECTOR3> positions({
 		{ -840.0f, +204.0f, 820.0f},
-		{ 740.0f, 130.0f, -340.0f},
+		{ 640.0f, 130.0f, -600.0f},
 		{ 50.0f, 10.0f, 50.0f},
 		{ 200.0f, 0.0f, 20.0f},
 		{ 100.0f, -5.0f, 100.0f},
-		{ 0.0f, 300.0f, 200.0f}
+		{ 0.0f, 300.0f, 200.0f},
+
+		{ 540.0f, 130.0f, -340.0f},
+		{ 640.0f, 510.0f, -540.0f},
+		{ -200.0f, 340.0f, 100.0f},
+		{ 500.0f, 135.0f, 300.0f},
+		{ 200.0f, 200.0f, -300.0f}
 	});
 	vector<D3DXVECTOR3> scales({
 		{ 0.1f, 0.1f, 0.1f},
-		{ 0.1f, 0.1f, 0.1f},
+		{ 0.6f, 0.6f, 0.6f},
 		{ 0.5f, 0.5f, 0.5f},
 		{ 1.0f, 1.0f, 1.0f},
-		{ 0.00005f, 0.00005f, 0.00005f},
+		{ 1.0f, 1.0f, 1.0f},
+		{ 2.0f, 2.0f, 2.0f},
+
+		{ 0.1f, 0.1f, 0.1f},
+		{ 0.8f, 0.8f, 0.8f},
+		{ 0.1f, 0.1f, 0.1f},
+		{ 0.1f, 0.1f, 0.1f},
 		{ 1.0f, 1.0f, 1.0f}
 	});
 
@@ -440,9 +467,7 @@ bool Graphics::Render(int screenWidth, int screenHeight)
 	m_D3D->GetOrthoMatrix(orthoMatrix);
 
 	
-	// ī�޶� ��ġ�� ��´�.
 	cameraPosition = m_Camera->GetPosition();
-	// ��ī�� ���� ī�޶� ��ġ�� �߽����� ��ȯ�մϴ�.
 	D3DXMatrixTranslation(&worldMatrix,
 		cameraPosition.x, cameraPosition.y, cameraPosition.z);
 
@@ -451,18 +476,16 @@ bool Graphics::Render(int screenWidth, int screenHeight)
 	D3DXMatrixMultiply(&gunMatrix, &gunMatrix, &worldMatrix);
 	//D3DXMatrixScaling(&gunMatrix, 0.5f, 0.5f, 0.5f);
 
-	// ǥ�� �ø��� ���ϴ�.
 	m_D3D->DisableCulling();
 	//// Turn off the Z buffer to begin all 2D rendering.
 	m_D3D->DisableZBuffer();
 
-	// ��ī�� �� ���̴��� ����Ͽ� �ϴ� ���� �������մϴ�.
 	m_SkyDome->Render(m_D3D->GetDeviceContext());
 	result = m_ShaderManager->RenderSkyDomeShader(m_D3D->GetDeviceContext(), m_SkyDome->GetIndexCount(),
 		worldMatrix, viewMatrix, projectionMatrix, m_SkyDome->GetApexColor(), m_SkyDome->GetCenterColor());
 	if (!result) return false;
 
-	// �ٽ� ǥ�� �ø��� �ǵ����ϴ�.
+
 	m_D3D->EnableCulling();
 	// Enable additive blending so the clouds blend with the sky dome color.
 	m_D3D->EnableSecondBlendState();
@@ -518,6 +541,10 @@ bool Graphics::Render(int screenWidth, int screenHeight)
 		if (i < 2) {
 			objectMatrices[i] = rot * objectMatrices[i] * mat;
 		}
+
+
+		else
+			objectMatrices[i] = objectMatrices[i] * mat;
 
 		m_Models[i]->Render(m_D3D->GetDeviceContext());
 		// Render the model using the light shader.
