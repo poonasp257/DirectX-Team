@@ -49,6 +49,7 @@ private:
 	ShaderManager		*m_ShaderManager;
 	TextureManager		*m_TerrainTextures;
 	vector<Model*>		 m_Models;
+	Model				*m_Gun;
 	SkyDome				*m_SkyDome;
 	SkyPlane			*m_SkyPlane;
 	bool				 m_wireFrame;

@@ -162,22 +162,35 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, HWND hwnd, Input* i
 		}
 	}
 
-	const int NumOfModel = 4;
+	const int NumOfModel = 10;
 	WCHAR* modelTextures[NumOfModel] = {
 		L"../Engine/data/earth.dds",
 		L"../Engine/data/13908_Neptune_planet_diff.dds",
-		L"../Engine/data/Jupiter_diff.dds",
-		L"../Engine/data/cp1.dds"
+		L"../Engine/data/R2.dds",
+		L"../Engine/data/train.dds",
+		L"../Engine/data/Robo warrior.dds",
+		L"../Engine/data/orbiter bugship.dds",
 	};
 	WCHAR*	models[NumOfModel] = {
 		L"../Engine/data/Earth.obj",
 		L"../Engine/data/Neptune.obj",
-		L"../Engine/data/Jupiter.obj",
-		L"../Engine/data/GX7 interceptor.obj"
+		L"../Engine/data/R2.obj",
+		L"../Engine/data/train.obj",
+		L"../Engine/data/Robo warrior.obj",
+		L"../Engine/data/orbiter bugship.obj"
 	};
 
+	m_Gun = new Model;
+	result = m_Gun->Initialize(m_D3D->GetDevice(),
+		L"../Engine/data/gun.obj", L"../Engine/data/earth.dds");
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
+		return false;
+	}
+	
 	// Create the model object.
-	for (int i = 0; i < 2; ++i)
+	for (int i = 0; i < 6; ++i)
 	{
 		Model* newModel = new Model;
 		result = newModel->Initialize(m_D3D->GetDevice(), models[i], modelTextures[i]);
@@ -394,13 +407,25 @@ bool Graphics::Render(int screenWidth, int screenHeight)
 	const size_t NumOfObject = m_Models.size();
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
 	D3DXVECTOR3 cameraPosition;
+	D3DXMATRIX gunMatrix;
 	vector<D3DXMATRIX> objectMatrices(m_Models.size());
 	vector<D3DXVECTOR3> positions({
 		{ -840.0f, +204.0f, 820.0f},
 		{ 740.0f, 130.0f, -340.0f},
-		{ 1100.0f, -331.0f, 120.0f},
-		{ 0.0f, 800.0f, 20.0f},
+		{ 50.0f, 10.0f, 50.0f},
+		{ 200.0f, 0.0f, 20.0f},
+		{ 100.0f, -5.0f, 100.0f},
+		{ 0.0f, 300.0f, 200.0f}
 	});
+	vector<D3DXVECTOR3> scales({
+		{ 0.1f, 0.1f, 0.1f},
+		{ 0.1f, 0.1f, 0.1f},
+		{ 0.5f, 0.5f, 0.5f},
+		{ 1.0f, 1.0f, 1.0f},
+		{ 0.00005f, 0.00005f, 0.00005f},
+		{ 1.0f, 1.0f, 1.0f}
+	});
+
 		
 	// Clear the buffers to begin the scene.
 	m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
@@ -413,12 +438,18 @@ bool Graphics::Render(int screenWidth, int screenHeight)
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 	m_D3D->GetOrthoMatrix(orthoMatrix);
+
 	
 	// ī�޶� ��ġ�� ��´�.
 	cameraPosition = m_Camera->GetPosition();
 	// ��ī�� ���� ī�޶� ��ġ�� �߽����� ��ȯ�մϴ�.
 	D3DXMatrixTranslation(&worldMatrix,
 		cameraPosition.x, cameraPosition.y, cameraPosition.z);
+
+	gunMatrix = viewMatrix;
+	D3DXMatrixInverse(&gunMatrix, NULL, &gunMatrix);
+	D3DXMatrixMultiply(&gunMatrix, &gunMatrix, &worldMatrix);
+	//D3DXMatrixScaling(&gunMatrix, 0.5f, 0.5f, 0.5f);
 
 	// ǥ�� �ø��� ���ϴ�.
 	m_D3D->DisableCulling();
@@ -464,18 +495,29 @@ bool Graphics::Render(int screenWidth, int screenHeight)
 	// Turn off wire frame rendering of the terrain if it was on.
 	if (m_wireFrame) m_D3D->DisableWireframe();
 
+	// Render the player gun
+	//m_Gun->Render(m_D3D->GetDeviceContext());
+	//result = m_ShaderManager->RenderLightShader(m_D3D->GetDeviceContext(), m_Gun->GetIndexCount(),
+	//	gunMatrix, viewMatrix, projectionMatrix,
+	//	m_Gun->GetTexture(), m_Light->GetDirection(),
+	//	m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Camera->GetPosition(),
+	//	m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+	//if (!result) return false;
+
 	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	for (int i = 0; i < m_Models.size(); ++i)
 	{
 		D3DXMATRIX mat, rot;
 		rotation += 0.002f;
-		D3DXMatrixScaling(&mat, 0.1f, 0.1f, 0.1f);
+		D3DXMatrixScaling(&mat, scales[i].x, scales[i].y, scales[i].z);
 		objectMatrices[i] = worldMatrix;
 		D3DXMatrixRotationY(&rot, rotation);
 		D3DXMatrixTranslation(&objectMatrices[i],
 			positions[i].x, positions[i].y, positions[i].z);
 
-		objectMatrices[i] = rot * objectMatrices[i] * mat;
+		if (i < 2) {
+			objectMatrices[i] = rot * objectMatrices[i] * mat;
+		}
 
 		m_Models[i]->Render(m_D3D->GetDeviceContext());
 		// Render the model using the light shader.
