@@ -127,7 +127,7 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, HWND hwnd, Input* i
 	}
 
 	// Initialize the shader manager object.
-	result = m_ShaderManager->Initialize(m_D3D->GetDevice(), hwnd);
+	result = m_ShaderManager->Initialize(m_D3D->GetDevice(), hwnd, baseViewMatrix);
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the shader manager object.", L"Error", MB_OK);
