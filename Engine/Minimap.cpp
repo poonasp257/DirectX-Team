@@ -73,7 +73,7 @@ bool MiniMap::Initialize(ID3D11Device* device, HWND hwnd, int screenWidth, int s
 		return false;
 	}
 
-	const float point = screenHeight * 0.004f;
+	const float point = screenHeight * 0.008f;
 
 	// Initialize the point bitmap object.
 	result = m_Point->Initialize(device, screenWidth, screenHeight, L"../Engine/data/point.dds", point, point);

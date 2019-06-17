@@ -634,6 +634,23 @@ bool Graphics::Frame(int fps, float frameTime, int cpu, int screenWidth, int scr
 		m_Camera->SetPosition(position.x, height + 2.0f, position.z);
 	}
 	
+	position = m_Camera->GetPosition();
+
+	if (position.x >= 494.0f) {
+		position.x = 494.0f;
+	}
+	if (position.x <= 27.0f) {
+		position.x = 27.0f;
+	}	
+	if (position.z >= 485.0f) {
+		position.z = 485.0f;
+	}
+	if (position.z <= 24.0f) {
+		position.z = 24.0f;
+	}
+	
+	m_Camera->SetPosition(position.x, position.y, position.z);
+
 	// Update the location of the camera on the mini map.
 	m_MiniMap->PositionUpdate(position.x, position.z);
 
