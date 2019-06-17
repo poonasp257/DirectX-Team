@@ -48,9 +48,11 @@ void Camera::Yaw(float radians)
 		return;
 	}
 	D3DXMATRIX rotation;
-	D3DXMatrixRotationAxis(&rotation, &m_up, radians);
+	//D3DXMatrixRotationAxis(&rotation, &m_up, radians);
+	D3DXMatrixRotationY(&rotation, radians);
 	D3DXVec3TransformNormal(&m_right, &m_right, &rotation);
 	D3DXVec3TransformNormal(&m_look, &m_look, &rotation);
+	m_rotation = m_look;
 }
 
 void Camera::Pitch(float radians)
@@ -73,7 +75,8 @@ void Camera::Pitch(float radians)
 
 	D3DXMATRIX rotation;
 	D3DXMatrixRotationAxis(&rotation, &m_right, radians);
-	D3DXVec3TransformNormal(&m_up, &m_up, &rotation);
+	//D3DXMatrixRotationY(&rotation, radians);
+	D3DXVec3TransformNormal(&m_right, &m_right, &rotation);
 	D3DXVec3TransformNormal(&m_look, &m_look, &rotation);
 }
 
@@ -101,6 +104,21 @@ D3DXVECTOR3 Camera::GetRotation()
 	return m_rotation;
 }
 
+D3DXVECTOR3 Camera::GetUp()
+{
+	return m_up;
+}
+
+D3DXVECTOR3 Camera::GetRight()
+{
+	return m_right;
+}
+
+D3DXMATRIX Camera::GetRotMatrix()
+{
+	return m_rotMatrix;
+}
+
 void Camera::Render()
 {
 	// Cap velocity to max velocity
@@ -115,7 +133,7 @@ void Camera::Render()
 	m_velocity = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_lookAt = m_position + m_look;
 
-	// Calculate the new view matrix
+	// Calculate the new view matrixf
 	D3DXVECTOR3 up = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 	D3DXMatrixLookAtLH(&m_viewMatrix, &m_position, &m_lookAt, &up);
 
@@ -139,4 +157,15 @@ void Camera::Render()
 void Camera::GetViewMatrix(D3DXMATRIX& viewMatrix)
 {
 	viewMatrix = m_viewMatrix;
+}
+
+
+float Camera::getYaw()
+{
+	return m_yaw;
+}
+
+float Camera::getPitch()
+{
+	return m_pitch;
 }

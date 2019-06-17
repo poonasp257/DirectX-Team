@@ -46,6 +46,7 @@ public:
 	bool SetNumOfPolygons(int, ID3D11DeviceContext*);
 	bool SetScreenSize(int, int, ID3D11DeviceContext*);
 
+
 	void TurnOnOffRenderInfo();
 	
 private:

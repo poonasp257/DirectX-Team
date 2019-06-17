@@ -18,12 +18,19 @@ public:
 	
 	D3DXVECTOR3 GetPosition();
 	D3DXVECTOR3 GetRotation();
+	D3DXVECTOR3 GetUp();
+	D3DXVECTOR3 GetRight();
+	D3DXMATRIX GetRotMatrix();
 
 	void Render();
 	void GetViewMatrix(D3DXMATRIX&);
 
+	float getYaw();
+	float getPitch();
+
 private:
 	D3DXMATRIX  m_viewMatrix;
+	D3DXMATRIX  m_rotMatrix;
 	D3DXVECTOR3 m_right;
 	D3DXVECTOR3 m_up;
 	D3DXVECTOR3 m_look;

@@ -571,6 +571,8 @@ bool Text::SetScreenSize(int screenWidth, int screenHeight, ID3D11DeviceContext*
 	return true;
 }
 
+
+
 void Text::TurnOnOffRenderInfo() 
 {
 	isEnableRenderInfo = !isEnableRenderInfo;

@@ -44,7 +44,8 @@ private:
 	Camera				*m_Camera;
 	Terrain				*m_Terrain;
 	Text				*m_Text;
-	Bitmap				*m_Bitmap;
+	Bitmap				*m_Bitmap, *m_Bitmap1;
+	//vector<Bitmap*>		 m_Bitmap;
 	Light				*m_Light;
 	ShaderManager		*m_ShaderManager;
 	TextureManager		*m_TerrainTextures;
