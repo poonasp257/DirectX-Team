@@ -19,7 +19,7 @@
 /////////////
 // GLOBALS //
 /////////////
-const bool FULL_SCREEN = true;
+const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = true;
 const float SCREEN_DEPTH = 1000.0f;
 const float SCREEN_NEAR = 0.1f;
@@ -50,6 +50,7 @@ private:
 	ShaderManager		*m_ShaderManager;
 	TextureManager		*m_TerrainTextures;
 	vector<Model*>		 m_Models;
+	Model				*m_Gun;
 	SkyDome				*m_SkyDome;
 	SkyPlane			*m_SkyPlane;
 	bool				 m_wireFrame;
