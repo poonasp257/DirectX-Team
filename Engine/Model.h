@@ -1,9 +1,6 @@
 #ifndef _MODEL_H_
 #define _MODEL_H_
 
-///////////////////////
-// MY CLASS INCLUDES //
-///////////////////////
 #include "Texture.h"
 
 class Model

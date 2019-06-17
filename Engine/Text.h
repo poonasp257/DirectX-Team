@@ -1,9 +1,6 @@
 #ifndef _TEXT_H_
 #define _TEXT_H_
 
-///////////////////////
-// MY CLASS INCLUDES //
-///////////////////////
 #include "Font.h"
 #include "FontShader.h"
 
@@ -45,7 +42,6 @@ public:
 	bool SetNumOfObjects(int, ID3D11DeviceContext*);
 	bool SetNumOfPolygons(int, ID3D11DeviceContext*);
 	bool SetScreenSize(int, int, ID3D11DeviceContext*);
-
 
 	void TurnOnOffRenderInfo();
 	

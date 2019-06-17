@@ -56,19 +56,19 @@ bool System::Initialize()
 		return false;
 	}
 	
-	//// Create the sound object.
-	//m_Sound = new Sound;
-	//if (!m_Sound)
-	//{
-	//	return false;
-	//}
-	//// Initialize the sound object.
-	//result = m_Sound->Initialize(m_hwnd);
-	//if (!result)
-	//{
-	//	MessageBox(m_hwnd, L"Could not initialize Direct Sound.", L"Error", MB_OK);
-	//	return false;
-	//}
+	// Create the sound object.
+	m_Sound = new Sound;
+	if (!m_Sound)
+	{
+		return false;
+	}
+	// Initialize the sound object.
+	result = m_Sound->Initialize(m_hwnd);
+	if (!result)
+	{
+		MessageBox(m_hwnd, L"Could not initialize Direct Sound.", L"Error", MB_OK);
+		return false;
+	}
 
 	// Create the fps object.
 	m_Fps = new FPS;

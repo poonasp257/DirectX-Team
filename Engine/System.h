@@ -1,9 +1,6 @@
 #ifndef _SYSTEM_H_
 #define _SYSTEM_H_
 
-///////////////////////
-// MY CLASS INCLUDES //
-///////////////////////
 #include "Input.h"
 #include "Graphics.h"
 #include "Sound.h"

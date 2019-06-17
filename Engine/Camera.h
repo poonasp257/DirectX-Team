@@ -15,22 +15,19 @@ public:
 
 	void SetPosition(float, float, float);
 	void SetRotation(float, float, float);
+	void SetSpeed(float);
 	
 	D3DXVECTOR3 GetPosition();
 	D3DXVECTOR3 GetRotation();
-	D3DXVECTOR3 GetUp();
-	D3DXVECTOR3 GetRight();
-	D3DXMATRIX GetRotMatrix();
+	float GetSpeed();
+	float GetYaw();
+	float GetPitch();
 
 	void Render();
 	void GetViewMatrix(D3DXMATRIX&);
 
-	float getYaw();
-	float getPitch();
-
 private:
 	D3DXMATRIX  m_viewMatrix;
-	D3DXMATRIX  m_rotMatrix;
 	D3DXVECTOR3 m_right;
 	D3DXVECTOR3 m_up;
 	D3DXVECTOR3 m_look;
@@ -46,6 +43,7 @@ private:
 	float       m_aspect;
 	float       m_nearPlane;
 	float       m_farPlane;
+	float		m_speed;
 	bool        m_invertY;
 	bool        m_enableYMovement;
 };

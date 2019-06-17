@@ -5,6 +5,7 @@ Camera::Camera()
 {
 	m_maxPitch = D3DXToRadian(89.0f);
 	m_maxVelocity = 1.0f;
+	m_speed = 1.0f;
 	m_invertY = FALSE;
 	m_enableYMovement = TRUE;
 	m_position = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
@@ -48,11 +49,9 @@ void Camera::Yaw(float radians)
 		return;
 	}
 	D3DXMATRIX rotation;
-	//D3DXMatrixRotationAxis(&rotation, &m_up, radians);
-	D3DXMatrixRotationY(&rotation, radians);
+	D3DXMatrixRotationAxis(&rotation, &m_up, radians);
 	D3DXVec3TransformNormal(&m_right, &m_right, &rotation);
 	D3DXVec3TransformNormal(&m_look, &m_look, &rotation);
-	m_rotation = m_look;
 }
 
 void Camera::Pitch(float radians)
@@ -75,8 +74,7 @@ void Camera::Pitch(float radians)
 
 	D3DXMATRIX rotation;
 	D3DXMatrixRotationAxis(&rotation, &m_right, radians);
-	//D3DXMatrixRotationY(&rotation, radians);
-	D3DXVec3TransformNormal(&m_right, &m_right, &rotation);
+	D3DXVec3TransformNormal(&m_up, &m_up, &rotation);
 	D3DXVec3TransformNormal(&m_look, &m_look, &rotation);
 }
 
@@ -94,6 +92,11 @@ void Camera::SetRotation(float x, float y, float z)
 	m_rotation.z = z;
 }
 
+void Camera::SetSpeed(float speed)
+{
+	m_speed = speed;
+}
+
 D3DXVECTOR3 Camera::GetPosition()
 {
 	return m_position;
@@ -104,19 +107,9 @@ D3DXVECTOR3 Camera::GetRotation()
 	return m_rotation;
 }
 
-D3DXVECTOR3 Camera::GetUp()
+float Camera::GetSpeed()
 {
-	return m_up;
-}
-
-D3DXVECTOR3 Camera::GetRight()
-{
-	return m_right;
-}
-
-D3DXMATRIX Camera::GetRotMatrix()
-{
-	return m_rotMatrix;
+	return m_speed;
 }
 
 void Camera::Render()
@@ -128,12 +121,12 @@ void Camera::Render()
 	}
 
 	// Move the camera
-	m_position += m_velocity;
+	m_position += m_velocity * m_speed;
 	// Could decelerate here. I'll just stop completely.
 	m_velocity = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_lookAt = m_position + m_look;
 
-	// Calculate the new view matrixf
+	// Calculate the new view matrix
 	D3DXVECTOR3 up = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 	D3DXMatrixLookAtLH(&m_viewMatrix, &m_position, &m_lookAt, &up);
 
@@ -159,13 +152,12 @@ void Camera::GetViewMatrix(D3DXMATRIX& viewMatrix)
 	viewMatrix = m_viewMatrix;
 }
 
-
-float Camera::getYaw()
+float Camera::GetYaw()
 {
 	return m_yaw;
 }
 
-float Camera::getPitch()
+float Camera::GetPitch()
 {
 	return m_pitch;
 }
