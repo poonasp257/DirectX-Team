@@ -41,7 +41,7 @@ void TextureShader::Shutdown()
 	return;
 }
 
-bool TextureShader::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix,
+bool TextureShader::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 								D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture)
 {
 	bool result;

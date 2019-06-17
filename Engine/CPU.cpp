@@ -1,5 +1,5 @@
 #include "PCH.h"
-#include "CpU.h"
+#include "CPU.h"
 
 CPU::CPU()
 {

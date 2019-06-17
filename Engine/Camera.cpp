@@ -5,6 +5,7 @@ Camera::Camera()
 {
 	m_maxPitch = D3DXToRadian(89.0f);
 	m_maxVelocity = 1.0f;
+	m_speed = 1.0f;
 	m_invertY = FALSE;
 	m_enableYMovement = TRUE;
 	m_position = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
@@ -91,6 +92,11 @@ void Camera::SetRotation(float x, float y, float z)
 	m_rotation.z = z;
 }
 
+void Camera::SetSpeed(float speed)
+{
+	m_speed = speed;
+}
+
 D3DXVECTOR3 Camera::GetPosition()
 {
 	return m_position;
@@ -99,6 +105,11 @@ D3DXVECTOR3 Camera::GetPosition()
 D3DXVECTOR3 Camera::GetRotation()
 {
 	return m_rotation;
+}
+
+float Camera::GetSpeed()
+{
+	return m_speed;
 }
 
 void Camera::Render()
@@ -110,7 +121,7 @@ void Camera::Render()
 	}
 
 	// Move the camera
-	m_position += m_velocity;
+	m_position += m_velocity * m_speed;
 	// Could decelerate here. I'll just stop completely.
 	m_velocity = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_lookAt = m_position + m_look;
@@ -139,4 +150,14 @@ void Camera::Render()
 void Camera::GetViewMatrix(D3DXMATRIX& viewMatrix)
 {
 	viewMatrix = m_viewMatrix;
+}
+
+float Camera::GetYaw()
+{
+	return m_yaw;
+}
+
+float Camera::GetPitch()
+{
+	return m_pitch;
 }

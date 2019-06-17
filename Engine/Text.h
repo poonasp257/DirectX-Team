@@ -1,9 +1,6 @@
 #ifndef _TEXT_H_
 #define _TEXT_H_
 
-///////////////////////
-// MY CLASS INCLUDES //
-///////////////////////
 #include "Font.h"
 #include "FontShader.h"
 

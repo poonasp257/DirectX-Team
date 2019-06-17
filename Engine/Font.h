@@ -1,9 +1,6 @@
 #ifndef _FONT_H_
 #define _FONT_H_
 
-///////////////////////
-// MY CLASS INCLUDES //
-///////////////////////
 #include "Texture.h"
 
 class Font
