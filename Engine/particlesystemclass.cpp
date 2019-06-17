@@ -167,10 +167,10 @@ bool ParticleSystemClass::InitializeParticleSystem()
 	m_particleVelocityVariation = 1.1f;
 
 	// Set the physical size of the particles.
-	m_particleSize = 0.2f;
+	m_particleSize = 0.1f;
 
 	// Set the number of particles to emit per second.
-	m_particlesPerSecond = 1000.0f;
+	m_particlesPerSecond = 2000.0f;
 
 	// Set the maximum number of particles allowed in the particle system.
 	m_maxParticles = 10000;

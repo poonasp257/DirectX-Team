@@ -93,7 +93,7 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, HWND hwnd, Input* i
 	}
 
 	// Initialize the particle system object.
-	result = m_ParticleSystem->Initialize(m_D3D->GetDevice(), L"../Engine/data/snow.dds");//star
+	result = m_ParticleSystem->Initialize(m_D3D->GetDevice(), L"../Engine/data/snow2.dds");//star
 	if (!result)
 	{
 		return false;
