@@ -4,7 +4,7 @@
 enum class KeyCode {
 	W, A, S, D,
 	ESCAPE, LSHFIT,
-	F1, F2, 
+	F1, F2
 };
 
 class Input
@@ -24,11 +24,13 @@ public:
 
 	void GetMouseLocation(int&, int&);
 	void GetMouseDeltaPosition(int&, int&);
+	bool GetLBMouseDown();
 
 private:
 	bool ReadKeyboard();
 	bool ReadMouse();
 	void ProcessInput();
+
 private:
 	IDirectInput8					   *m_directInput;
 	IDirectInputDevice8				   *m_keyboard;

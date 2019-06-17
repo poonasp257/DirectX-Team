@@ -24,14 +24,18 @@ public:
 	Sound();
 	Sound(const Sound&);
 	~Sound();
-	bool Initialize(HWND);
+	
+	bool Initialize(HWND, const char* fileName);
 	void Shutdown();
+
+	bool PlayWaveFile(long volume, bool loop);
+	bool StopWaveFile();
+
 private:
 	bool InitializeDirectSound(HWND);
 	void ShutdownDirectSound();
-	bool LoadWaveFile(char*, IDirectSoundBuffer8**);
+	bool LoadWaveFile(const char*, IDirectSoundBuffer8**);
 	void ShutdownWaveFile(IDirectSoundBuffer8**);
-	bool PlayWaveFile();
 private:
 	IDirectSound8		*m_DirectSound;
 	IDirectSoundBuffer	*m_primaryBuffer;

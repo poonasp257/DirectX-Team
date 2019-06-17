@@ -571,6 +571,34 @@ bool Text::SetScreenSize(int screenWidth, int screenHeight, ID3D11DeviceContext*
 	return true;
 }
 
+bool Text::SetPosition(D3DXVECTOR3 position, ID3D11DeviceContext* deviceContext)
+{
+	char tempString[128];
+	char numString[128];
+	SentenceType *sentence;
+	bool result;
+	_itoa_s(position.x, tempString, 10);
+	strcpy_s(numString, "x:");
+	strcat_s(numString, tempString);
+	_itoa_s(position.y, tempString, 10);
+	strcat_s(numString, "y:");
+	strcat_s(numString, tempString);
+	_itoa_s(position.z, tempString, 10);
+	strcat_s(numString, "z:");
+	strcat_s(numString, tempString);
+
+	sentence = m_renderInfo[5];
+	
+	// Update the sentence vertex buffer with the new string information.
+	result = UpdateSentence(sentence, numString,
+		sentence->x, sentence->y, 0.0f, 1.0f, 0.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+	return true;
+}
+
 void Text::TurnOnOffRenderInfo() 
 {
 	isEnableRenderInfo = !isEnableRenderInfo;

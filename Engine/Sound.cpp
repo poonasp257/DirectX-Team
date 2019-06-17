@@ -16,7 +16,7 @@ Sound::~Sound()
 {
 }
 
-bool Sound::Initialize(HWND hwnd)
+bool Sound::Initialize(HWND hwnd, const char* fileName)
 {
 	bool result;
 	// Initialize direct sound and the primary sound buffer.
@@ -26,17 +26,12 @@ bool Sound::Initialize(HWND hwnd)
 		return false;
 	}
 	// Load a wave audio file onto a secondary buffer.
-	result = LoadWaveFile("../Engine/data/BGM.wav", &m_secondaryBuffer1);
+	result = LoadWaveFile(fileName, &m_secondaryBuffer1);
 	if (!result)
 	{
 		return false;
 	}
-	// Play the wave file now that it has been loaded.
-	result = PlayWaveFile();
-	if (!result)
-	{
-		return false;
-	}
+
 	return true;
 }
 
@@ -116,7 +111,7 @@ void Sound::ShutdownDirectSound()
 	return;
 }
 
-bool Sound::LoadWaveFile(char* filename, IDirectSoundBuffer8** secondaryBuffer)
+bool Sound::LoadWaveFile(const char* filename, IDirectSoundBuffer8** secondaryBuffer)
 {
 	int error;
 	FILE* filePtr;
@@ -267,8 +262,8 @@ void Sound::ShutdownWaveFile(IDirectSoundBuffer8** secondaryBuffer)
 	return;
 }
 
-bool Sound::PlayWaveFile()
-{
+bool Sound::PlayWaveFile(long volume, bool loop)
+{	
 	HRESULT result;
 	// Set position at the beginning of the sound buffer.
 	result = m_secondaryBuffer1->SetCurrentPosition(0);
@@ -277,13 +272,41 @@ bool Sound::PlayWaveFile()
 		return false;
 	}
 	// Set volume of the buffer to 100%.
-	result = m_secondaryBuffer1->SetVolume(DSBVOLUME_MAX);
+	result = m_secondaryBuffer1->SetVolume(volume);
 	if (FAILED(result))
 	{
 		return false;
 	}
 	// Play the contents of the secondary sound buffer.
-	result = m_secondaryBuffer1->Play(0, 0, 0);
+	result = m_secondaryBuffer1->Play(0, 0, (loop ? 1 : 0));
+	if (FAILED(result))
+	{
+		return false;
+	}
+	return true;
+}
+
+bool Sound::StopWaveFile()
+{
+	DWORD flag;
+	m_secondaryBuffer1->GetStatus(&flag);
+	if (flag == DSBSTATUS_PLAYING) { return false; }
+
+	HRESULT result;
+	// Set position at the beginning of the sound buffer.
+	result = m_secondaryBuffer1->SetCurrentPosition(0);
+	if (FAILED(result))
+	{
+		return false;
+	}
+	// Set volume of the buffer to 100%.
+	result = m_secondaryBuffer1->SetVolume(DSBVOLUME_MIN);
+	if (FAILED(result))
+	{
+		return false;
+	}
+	// Play the contents of the secondary sound buffer.
+	result = m_secondaryBuffer1->Stop();
 	if (FAILED(result))
 	{
 		return false;

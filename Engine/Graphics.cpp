@@ -5,6 +5,7 @@ Graphics::Graphics()
 {
 	m_D3D = 0;
 	m_Input = 0;
+	m_gunShot = 0;
 	m_Camera = 0;
 	m_Terrain = 0;
 	m_Text = 0;
@@ -51,6 +52,17 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, HWND hwnd, Input* i
 		return false;
 	}
 
+	m_gunShot = new Sound;
+	if (!m_gunShot)
+	{
+		return false;
+	}
+	result = m_gunShot->Initialize(hwnd, "../Engine/data/gunshot.wav");
+	if (!result)
+	{
+		return false;
+	}
+
 	// Create the camera object.
 	m_Camera = new Camera;
 	if (!m_Camera)
@@ -64,7 +76,7 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, HWND hwnd, Input* i
 	m_Camera->Render();
 	m_Camera->GetViewMatrix(baseViewMatrix);	
 	//m_Camera->SetPosition(100.0f, 0.0f, 200.0f);
-	m_Camera->SetPosition(0.0f, 0.0f, 0.0f);
+	m_Camera->SetPosition(286.0f, 14.0f, 208.0f);
 
 	// Create the terrain object.
 	m_Terrain = new Terrain;
@@ -182,16 +194,16 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, HWND hwnd, Input* i
 
 	const int NumOfModel = 20;
 	WCHAR*	models[NumOfModel] = {
-		L"../Engine/data/Jupiter.obj",
+		L"../Engine/data/spaceship03.obj",
 	};
 	WCHAR* modelTextures[NumOfModel] = {
-		L"../Engine/data/Jupiter_diff.dds",
+		L"../Engine/data/spaceship03.dds",
 	};
 	D3DXVECTOR3 positions[] = {
-		{ 0.0f, 80.0f, -2000.0f}
+		{ 309.0f, 5.0f, 300.0f},
 	};
 	D3DXVECTOR3 scales[] = {
-		{ 0.5f, 0.5f, 0.5f}
+		{ 1.0f, 1.0f, 1.0f},
 	};
 	m_Gun = new Model;
 	result = m_Gun->Initialize(m_D3D->GetDevice(),
@@ -410,6 +422,13 @@ void Graphics::Shutdown()
 		m_Camera = 0;
 	}
 
+	if (m_gunShot)
+	{
+		m_gunShot->Shutdown();
+		delete m_gunShot;
+		m_gunShot = 0;
+	}
+
 	// Release the D3D object.
 	if(m_D3D)
 	{
@@ -427,10 +446,20 @@ bool Graphics::Frame(int fps, float frameTime, int cpu, int screenWidth, int scr
 	int dir = 1;
 	int deltaX, deltaY;
 	const int cameraSpeed = m_Camera->GetSpeed();
+	static float delay = 0.0f;
 
 	m_Input->GetMouseDeltaPosition(deltaX, deltaY);
 	m_Camera->Yaw(deltaX * frameTime * 0.00018f);
 	m_Camera->Pitch(deltaY * frameTime * 0.00018f);
+
+	if (m_Input->GetLBMouseDown() && delay >= 100.0f) {
+		m_gunShot->PlayWaveFile(-2000, false);
+		delay = 0.0f;
+	}
+	else { 
+		m_gunShot->StopWaveFile(); 
+		delay += frameTime;
+	}
 
 	if (m_Input->GetKey(KeyCode::LSHFIT)) { m_Camera->SetSpeed(cameraSpeed * 1.2f); }
 	else { m_Camera->SetSpeed(cameraSpeed); }
@@ -472,12 +501,19 @@ bool Graphics::Frame(int fps, float frameTime, int cpu, int screenWidth, int scr
 		return false;
 	}
 
+
 	// Do the sky plane frame processing.
 	m_SkyPlane->Frame();
 	
 	// Get the current position of the camera.
 	D3DXVECTOR3 position = m_Camera->GetPosition();
 	float height;
+
+	result = m_Text->SetPosition(position, m_D3D->GetDeviceContext());
+	if (!result)
+	{
+		return false;
+	}
 
 	// Get the height of the triangle that is directly underneath the given camera position.
 	bool foundHeight = m_QuadTree->GetHeightAtPosition(position.x, position.z, height);
@@ -680,7 +716,7 @@ bool Graphics::Render(int screenWidth, int screenHeight)
 			D3DXMatrixRotationY(&rotMat, rotY);
 
 			if (i < 2) {
-				D3DXMatrixMultiply(&objMat, &objMat, &rotMat);
+				//D3DXMatrixMultiply(&objMat, &objMat, &rotMat);
 			}
 
 			m_Models[i]->Render(m_D3D->GetDeviceContext());

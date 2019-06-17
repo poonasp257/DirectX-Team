@@ -32,7 +32,7 @@ private:
 	HWND		m_hwnd;
 	Input		*m_Input;
 	Graphics	*m_Graphics;
-	Sound		*m_Sound;
+	Sound		*m_BGM;
 	FPS			*m_Fps;
 	CPU			*m_Cpu;
 	Timer		*m_Timer;

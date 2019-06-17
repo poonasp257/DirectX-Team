@@ -3,6 +3,7 @@
 
 #include "Input.h"
 #include "Camera.h"
+#include "Sound.h"
 #include "ShaderManager.h"
 #include "TextureManager.h"
 #include "Light.h"
@@ -42,6 +43,7 @@ private:
 private:
 	Direct3D			*m_D3D;
 	Input				*m_Input;
+	Sound				*m_gunShot;
 	Camera				*m_Camera;
 	Terrain				*m_Terrain;
 	Text				*m_Text;

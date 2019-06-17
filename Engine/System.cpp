@@ -4,7 +4,7 @@ System::System()
 {
 	m_Input = 0;
 	m_Graphics = 0;
-	m_Sound = 0;
+	m_BGM = 0;
 	m_Fps = 0;
 	m_Cpu = 0;
 	m_Timer = 0;
@@ -57,18 +57,20 @@ bool System::Initialize()
 	}
 	
 	// Create the sound object.
-	m_Sound = new Sound;
-	if (!m_Sound)
+	m_BGM = new Sound;
+	if (!m_BGM)
 	{
 		return false;
 	}
 	// Initialize the sound object.
-	result = m_Sound->Initialize(m_hwnd);
+	result = m_BGM->Initialize(m_hwnd, "../Engine/data/BGM.wav");
 	if (!result)
 	{
 		MessageBox(m_hwnd, L"Could not initialize Direct Sound.", L"Error", MB_OK);
 		return false;
 	}
+	
+	m_BGM->PlayWaveFile(-1000, true);
 
 	// Create the fps object.
 	m_Fps = new FPS;
@@ -126,11 +128,11 @@ void System::Shutdown()
 	}
 
 	// Release the sound object.
-	if (m_Sound)
+	if (m_BGM)
 	{
-		m_Sound->Shutdown();
-		delete m_Sound;
-		m_Sound = 0;
+		m_BGM->Shutdown();
+		delete m_BGM;
+		m_BGM = 0;
 	}
 
 	// Release the graphics object.
@@ -355,7 +357,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 			PostQuitMessage(0);		
 			return 0;
 		}
-
+		 
 		// All other messages pass to the message handler in the system class.
 		default:
 		{

@@ -15,7 +15,7 @@ Input::Input()
 		{ KeyCode::ESCAPE,  DIK_ESCAPE },
 		{ KeyCode::LSHFIT,	DIK_LSHIFT},
 		{ KeyCode::F1,		DIK_F1},
-		{ KeyCode::F2,		DIK_F2}
+		{ KeyCode::F2,		DIK_F2},
 	};
 }
 
@@ -255,4 +255,9 @@ void Input::GetMouseDeltaPosition(int& deltaX, int& deltaY)
 {
 	deltaX = m_mouseState.lX;
 	deltaY = m_mouseState.lY;
+}
+
+bool Input::GetLBMouseDown()
+{
+	return m_mouseState.rgbButtons[0] & 0x80;
 }
