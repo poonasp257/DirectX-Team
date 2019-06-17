@@ -22,12 +22,12 @@ bool MiniMap::Initialize(ID3D11Device* device, HWND hwnd, int screenWidth, int s
 	bool result;
 
 	// Initialize the location of the mini-map on the screen.
-	m_mapLocationX = 50;
-	m_mapLocationY = 850;
+	m_mapLocationX = screenWidth * 0.01f;
+	m_mapLocationY = screenHeight * 0.78f;
 
 	// Set the size of the mini-map.
-	m_mapSizeX = 200.0f;
-	m_mapSizeY = 200.0f;
+	m_mapSizeX = screenHeight * 0.20f;
+	m_mapSizeY = screenHeight * 0.20f;
 
 	// Store the base view matrix.
 	m_viewMatrix = viewMatrix;
@@ -44,13 +44,13 @@ bool MiniMap::Initialize(ID3D11Device* device, HWND hwnd, int screenWidth, int s
 	}
 
 	// Initialize the mini-map bitmap object.
-	result = m_MiniMapBitmap->Initialize(device, screenWidth, screenHeight, L"../Engine/data/minimap.dds", 200, 200);
+	result = m_MiniMapBitmap->Initialize(device, screenWidth, screenHeight, L"../Engine/data/minimap.dds", m_mapSizeX, m_mapSizeY);
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the mini-map object.", L"Error", MB_OK);
 		return false;
-	} 
-	
+	}
+
 	// Create the border bitmap object.
 	m_Border = new Bitmap;
 	if (!m_Border)
@@ -59,13 +59,13 @@ bool MiniMap::Initialize(ID3D11Device* device, HWND hwnd, int screenWidth, int s
 	}
 
 	// Initialize the border bitmap object.
-	result = m_Border->Initialize(device, screenWidth, screenHeight, L"../Engine/data/border.dds", 204, 204);
+	result = m_Border->Initialize(device, screenWidth, screenHeight, L"../Engine/data/border.dds", m_mapSizeY + 4, m_mapSizeY + 4);
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the border object.", L"Error", MB_OK);
 		return false;
 	}
-	
+
 	// Create the point bitmap object.
 	m_Point = new Bitmap;
 	if (!m_Point)
@@ -73,8 +73,10 @@ bool MiniMap::Initialize(ID3D11Device* device, HWND hwnd, int screenWidth, int s
 		return false;
 	}
 
+	const float point = screenHeight * 0.004f;
+
 	// Initialize the point bitmap object.
-	result = m_Point->Initialize(device, screenWidth, screenHeight, L"../Engine/data/point.dds", 4, 4);
+	result = m_Point->Initialize(device, screenWidth, screenHeight, L"../Engine/data/point.dds", point, point);
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the point object.", L"Error", MB_OK);
@@ -82,7 +84,7 @@ bool MiniMap::Initialize(ID3D11Device* device, HWND hwnd, int screenWidth, int s
 	}
 
 	return true;
-} 
+}
 
 void MiniMap::Shutdown()
 {

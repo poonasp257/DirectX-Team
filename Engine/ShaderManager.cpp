@@ -12,6 +12,7 @@ ShaderManager::ShaderManager()
 	m_SkyPlaneShader = 0;
 	m_DepthShader = 0;
 	m_ShadowShader = 0;
+	m_PointLightShader = 0;
 }
 
 ShaderManager::ShaderManager(const ShaderManager& other)
@@ -152,11 +153,54 @@ bool ShaderManager::Initialize(ID3D11Device* device, HWND hwnd, D3DXMATRIX	baseV
 		return false;
 	}
 
+	m_ParticleShader = new ParticleShader;
+	if (!m_ParticleShader)
+	{
+		return false;
+	}
+
+	result = m_ParticleShader->Initialize(device, hwnd);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the sky plane shader object.", L"Error", MB_OK);
+		return false;
+	}
+
+
+	m_PointLightShader = new PointLightShader;
+	if (!m_PointLightShader)
+	{
+		return false;
+	}
+
+	result = m_PointLightShader->Initialize(device, hwnd);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the sky plane shader object.", L"Error", MB_OK);
+		return false;
+	}
+	
 	return true;
 }
 
 void ShaderManager::Shutdown()
 {
+	// Release the sky plane shader object.
+	if (m_PointLightShader)
+	{
+		m_PointLightShader->Shutdown();
+		delete m_PointLightShader;
+		m_PointLightShader = 0;
+	}
+	
+	// Release the sky plane shader object.
+	if (m_ParticleShader)
+	{
+		m_ParticleShader->Shutdown();
+		delete m_ParticleShader;
+		m_ParticleShader = 0;
+	}
+	
 	// Release the sky plane shader object.
 	if (m_ShadowShader)
 	{
@@ -297,4 +341,16 @@ bool ShaderManager::RenderShadowShader(ID3D11DeviceContext* deviceContext, int i
 		worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix,
 		lightProjectionMatrix, texture, depthMapTexture,
 		lightPosition, ambientColor, diffuseColor);
+}
+
+bool ShaderManager::RenderParticleShader(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture)
+{
+	return m_ParticleShader->Render(deviceContext, indexCount, worldMatrix, viewMatrix, projectionMatrix, texture);
+}
+
+bool ShaderManager::RenderPointLightShader(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, D3DXVECTOR4 diffuseColor[], D3DXVECTOR4 lightPosition[])
+{
+	return m_PointLightShader->Render(deviceContext, indexCount, worldMatrix, viewMatrix, projectionMatrix, texture, diffuseColor, lightPosition);
 }

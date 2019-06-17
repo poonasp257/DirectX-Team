@@ -27,6 +27,8 @@
     <None Include="Font.vs" />
     <None Include="Light.ps" />
     <None Include="Light.vs" />
+    <None Include="pointlight.ps" />
+    <None Include="pointlight.vs" />
     <None Include="Shadow.ps" />
     <None Include="Shadow.vs" />
     <None Include="SkyDome.ps" />
@@ -56,10 +58,14 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Minimap.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="ParticleShader.cpp" />
+    <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="PCH.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="PointLight.cpp" />
+    <ClCompile Include="PointLightShader.cpp" />
     <ClCompile Include="QuadTree.cpp" />
     <ClCompile Include="RenderTexture.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
@@ -95,7 +101,11 @@
     <ClInclude Include="LightShader.h" />
     <ClInclude Include="Minimap.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="ParticleShader.h" />
+    <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PCH.h" />
+    <ClInclude Include="PointLight.h" />
+    <ClInclude Include="PointLightShader.h" />
     <ClInclude Include="QuadTree.h" />
     <ClInclude Include="RenderTexture.h" />
     <ClInclude Include="ShaderManager.h" />

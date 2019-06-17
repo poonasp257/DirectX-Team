@@ -17,6 +17,8 @@
 #include "RenderTexture.h"
 #include "QuadTree.h" 
 #include "Minimap.h"
+#include "ParticleSystem.h"
+#include "PointLight.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = true;
@@ -47,7 +49,7 @@ private:
 	Camera				*m_Camera;
 	Terrain				*m_Terrain;
 	Text				*m_Text;
-	Bitmap				*m_Bitmap;
+	Bitmap				*m_Bitmap, *m_UI;
 	Light				*m_Light;
 	ShaderManager		*m_ShaderManager;
 	TextureManager		*m_TerrainTextures;
@@ -60,6 +62,8 @@ private:
 	RenderTexture		*m_RenderTexture;
 	QuadTree			*m_QuadTree;
 	MiniMap				*m_MiniMap;
+	ParticleSystem		*m_ParticleSystem;
+	PointLight			*m_PointLight;
 	bool				 m_wireFrame;
 	int					 m_numOfPolygons;
 };

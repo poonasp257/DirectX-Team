@@ -13,6 +13,8 @@
 #include "SkyPlaneShader.h"
 #include "DepthShader.h"
 #include "ShadowShader.h"
+#include "ParticleShader.h"
+#include "PointLightShader.h"
 
 class ShaderManager
 {
@@ -35,17 +37,24 @@ public:
 	bool RenderDepthShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX);
 	bool RenderShadowShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*,
 		ID3D11ShaderResourceView*, D3DXVECTOR3, D3DXVECTOR4, D3DXVECTOR4);
+	bool RenderParticleShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*);
+
+	bool RenderPointLightShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, D3DXVECTOR4[],
+		D3DXVECTOR4[]);
+
 
 	TerrainShader* GetTerrainShader() { return m_TerrainShader; }
 private:
-	ColorShader		*m_ColorShader;
-	TextureShader	*m_TextureShader;
-	FontShader		*m_FontShader;
-    LightShader		*m_LightShader;
-	TerrainShader	*m_TerrainShader;
-	SkyDomeShader	*m_SkyDomeShader;
-	SkyPlaneShader	*m_SkyPlaneShader;
-	DepthShader		*m_DepthShader;
-	ShadowShader	*m_ShadowShader;
+	ColorShader			*m_ColorShader;
+	TextureShader		*m_TextureShader;
+	FontShader			*m_FontShader;
+    LightShader			*m_LightShader;
+	PointLightShader	*m_PointLightShader;
+	TerrainShader		*m_TerrainShader;
+	SkyDomeShader		*m_SkyDomeShader;
+	SkyPlaneShader		*m_SkyPlaneShader;
+	DepthShader			*m_DepthShader;
+	ShadowShader		*m_ShadowShader;
+	ParticleShader		*m_ParticleShader;
 };
 #endif

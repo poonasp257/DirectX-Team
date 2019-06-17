@@ -10,6 +10,7 @@ Graphics::Graphics()
 	m_Terrain = 0;
 	m_Text = 0;
 	m_Bitmap = 0;
+	m_UI = 0;
 	m_Light = 0;
 	m_ShaderManager = 0;
 	m_SkyDome = 0;
@@ -18,6 +19,8 @@ Graphics::Graphics()
 	m_RenderTexture = 0;
 	m_QuadTree = 0;
 	m_MiniMap = 0;
+	m_ParticleSystem = 0;
+	m_PointLight = 0;
 	m_numOfPolygons = 0;
 }
 
@@ -76,7 +79,21 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, HWND hwnd, Input* i
 	m_Camera->Render();
 	m_Camera->GetViewMatrix(baseViewMatrix);	
 	//m_Camera->SetPosition(100.0f, 0.0f, 200.0f);
-	m_Camera->SetPosition(286.0f, 14.0f, 208.0f);
+	m_Camera->SetPosition(200.0f, 14.0f, 208.0f);
+
+	// Create the particle system object.
+	m_ParticleSystem = new ParticleSystem;
+	if (!m_ParticleSystem)
+	{
+		return false;
+	}
+
+	// Initialize the particle system object.
+	result = m_ParticleSystem->Initialize(m_D3D->GetDevice(), L"../Engine/data/snow.dds");//star
+	if (!result)
+	{
+		return false;
+	}
 
 	// Create the terrain object.
 	m_Terrain = new Terrain;
@@ -123,6 +140,21 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, HWND hwnd, Input* i
 		return false;
 	}
 
+	// Create the bitmap object.
+	m_UI = new Bitmap;
+	if (!m_UI)
+	{
+		return false;
+	}
+	// Initialize the bitmap object.
+	result = m_UI->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight,
+		L"../Engine/data/UI.dds", screenWidth, screenHeight);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+		return false;
+	}
+
 	// Create the light object.
 	m_Light = new Light;
 	if (!m_Light)
@@ -136,8 +168,17 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, HWND hwnd, Input* i
 	m_Light->SetDirection(-0.5f, -1.0f, 0.0f);
 	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetSpecularPower(30.0f);
-	m_Light->SetLookAt(0.0f, 0.0f, 0.0f);
-	m_Light->GenerateProjectionMatrix(SCREEN_DEPTH, SCREEN_NEAR);
+//	m_Light->SetLookAt(0.0f, 0.0f, 0.0f);
+//	m_Light->GenerateProjectionMatrix(SCREEN_DEPTH, SCREEN_NEAR);
+
+	m_PointLight = new PointLight;
+	if (!m_PointLight)
+	{
+		return false;
+	}
+
+	m_PointLight->SetDiffuseColor(1.0f, 0.0f, 0.0f, 1.0f);
+	m_PointLight->SetPosition(308.0f, 15.0f, 182.0f); 
 
 	// Create the render to texture object.
 	m_RenderTexture = new RenderTexture;
@@ -192,19 +233,68 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, HWND hwnd, Input* i
 		if (!result) return false;
 	}
 
-	const int NumOfModel = 20;
+	const int NumOfModel = 13;
 	WCHAR*	models[NumOfModel] = {
+		L"../Engine/data/Earth.obj",
+		L"../Engine/data/Jupiter.obj",
+		L"../Engine/data/military container.obj",
+		L"../Engine/data/military container.obj",
+		L"../Engine/data/antena.obj",
+		L"../Engine/data/floor.obj", 
+		L"../Engine/data/Lampe.obj",
+		L"../Engine/data/train.obj",
+		L"../Engine/data/spaceship01.obj",
+		L"../Engine/data/spaceship02.obj",
+		L"../Engine/data/spaceship02.obj",
+		L"../Engine/data/spaceship02.obj",
 		L"../Engine/data/spaceship03.obj",
 	};
 	WCHAR* modelTextures[NumOfModel] = {
+		L"../Engine/data/earth.dds",
+		L"../Engine/data/Jupiter_diff.dds",
+		L"../Engine/data/floor.dds",
+		L"../Engine/data/floor.dds",
+		L"../Engine/data/antena.dds",
+		L"../Engine/data/floor.dds",
+		L"../Engine/data/Lampe.dds",
+		L"../Engine/data/train.dds",
+		L"../Engine/data/spaceship01.dds",
+		L"../Engine/data/spaceship02.dds",
+		L"../Engine/data/spaceship02.dds",
+		L"../Engine/data/spaceship02.dds",
 		L"../Engine/data/spaceship03.dds",
 	};
 	D3DXVECTOR3 positions[] = {
+		{ 0.0f, 150.0f, -700.0f},
+		{ 0.0f, 150.0f, -700.0f},
+		{ 286.0f, 12.5f, 208.0f },
+		{ 300.0f, 13.5f, 180.0f },
+		{ 230.0f, 42.5f, 76.0f },
+		{ 309.0f, 6.0f, 300.0f},
+		{ 308.0f, 15.0f, 182.0f }, 
+		{ 330.0f, 13.0f, 190.0f },
+		{ -250.0f, 750.0f, -200.0f },
+		{ -250.0f, 460.0f, 320.0f },
+		{ -300.0f, 460.0f, 280.0f },
+		{ -200.0f, 460.0f, 280.0f },
 		{ 309.0f, 5.0f, 300.0f},
 	};
 	D3DXVECTOR3 scales[] = {
+		{ 0.5f, 0.5f, 0.5f},
+		{ 1.0f, 1.0f, 1.0f},
+		{ 0.04f, 0.04f, 0.04f },
+		{ 0.03f, 0.03f, 0.03f },
+		{ 0.1f, 0.1f, 0.1f },
+		{ 15.0f, 15.0f, 15.0f},
+		{ 0.01f, 0.01f, 0.01f},
+		{ 1.0f, 1.0f, 1.0f},
+		{ 0.3f, 0.3f, 0.3f},
+		{ 10.0f, 10.0f, 10.0f},
+		{ 10.0f, 10.0f, 10.0f},
+		{ 10.0f, 10.0f, 10.0f},
 		{ 1.0f, 1.0f, 1.0f},
 	};
+
 	m_Gun = new Model;
 	result = m_Gun->Initialize(m_D3D->GetDevice(),
 		L"../Engine/data/gun.obj", L"../Engine/data/gun.dds");
@@ -216,7 +306,7 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, HWND hwnd, Input* i
 	   
 	D3DXMATRIX objMat, scaleMat;
 	// Create the model object.
-	for (int i = 0; i < 1; ++i)
+	for (int i = 0; i < NumOfModel; ++i)
 	{ 
 		Model* newModel = new Model;
 		result = newModel->Initialize(m_D3D->GetDevice(), models[i], modelTextures[i]);
@@ -289,8 +379,7 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, HWND hwnd, Input* i
 		MessageBox(hwnd, L"Could not initialize the quad tree object.", L"Error", MB_OK);
 		return false;
 	}
-
-
+	
 	int terrainWidth, terrainHeight;	
 
 	// Get the size of the terrain as the minimap will require this information.
@@ -384,11 +473,26 @@ void Graphics::Shutdown()
 		m_ShaderManager = 0;
 	}
 
+	// Release the light objects. 
+	if(m_PointLight) 
+	{ 
+		delete m_PointLight;
+		m_PointLight = 0;
+	}
+
 	// Release the light object.
 	if(m_Light)
 	{
 		delete m_Light;
 		m_Light = 0;
+	}
+
+	// Release the bitmap object.
+	if (m_UI)
+	{
+		m_UI->Shutdown();
+		delete m_UI;
+		m_UI = 0;
 	}
 
 	// Release the bitmap object.
@@ -415,6 +519,13 @@ void Graphics::Shutdown()
 		m_Terrain = 0;
 	}
 
+	if (m_ParticleSystem)
+	{
+		m_ParticleSystem->Shutdown();
+		delete m_ParticleSystem;
+		m_ParticleSystem = 0;
+	}
+
 	// Release the camera object.
 	if(m_Camera)
 	{
@@ -436,8 +547,6 @@ void Graphics::Shutdown()
 		delete m_D3D;
 		m_D3D = 0;
 	}
-	
-	return;
 }
 
 bool Graphics::Frame(int fps, float frameTime, int cpu, int screenWidth, int screenHeight)
@@ -447,6 +556,9 @@ bool Graphics::Frame(int fps, float frameTime, int cpu, int screenWidth, int scr
 	int deltaX, deltaY;
 	const int cameraSpeed = m_Camera->GetSpeed();
 	static float delay = 0.0f;
+
+	// Run the frame processing for the particle system.
+	m_ParticleSystem->Frame(frameTime, m_D3D->GetDeviceContext());
 
 	m_Input->GetMouseDeltaPosition(deltaX, deltaY);
 	m_Camera->Yaw(deltaX * frameTime * 0.00018f);
@@ -500,7 +612,6 @@ bool Graphics::Frame(int fps, float frameTime, int cpu, int screenWidth, int scr
 	{
 		return false;
 	}
-
 
 	// Do the sky plane frame processing.
 	m_SkyPlane->Frame();
@@ -600,6 +711,11 @@ bool Graphics::Render(int screenWidth, int screenHeight)
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
 	D3DXMATRIX lightViewMatrix, lightProjectionMatrix;
 	D3DXVECTOR3 cameraPosition;
+	D3DXVECTOR4 diffuseColor[1];
+	D3DXVECTOR4 lightPosition[1];
+
+	diffuseColor[0] = m_PointLight->GetDiffuseColor();
+	lightPosition[0] = m_PointLight->GetPosition();
 
 	// Clear the buffers to begin the scene.
 	m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
@@ -706,17 +822,24 @@ bool Graphics::Render(int screenWidth, int screenHeight)
 		// If it can be seen then render it, if not skip this model and check the next sphere.
 		if (renderModel)
 		{
-			D3DXMATRIX objMat, rotMat;
+			D3DXMATRIX objMat, rotMatX, rotMatY;
 			static float rotX = 0.0f, rotY = 0.0f;
 			objMat = m_objMatrices[i];
-			rotX += 0.002f;
-			rotY += 0.002f;
-			D3DXMatrixIdentity(&rotMat);
-			D3DXMatrixRotationX(&rotMat, rotX);
-			D3DXMatrixRotationY(&rotMat, rotY);
+			rotX += 0.0006f;
+			rotY += 0.0006f;
+			D3DXMatrixIdentity(&rotMatX);
+			D3DXMatrixIdentity(&rotMatY);
+			D3DXMatrixRotationX(&rotMatX, rotX);
+			D3DXMatrixRotationY(&rotMatY, rotY);
 
-			if (i < 2) {
-				//D3DXMatrixMultiply(&objMat, &objMat, &rotMat);
+			if (i == 0) {
+				D3DXMatrixMultiply(&objMat, &rotMatX, &objMat);
+				D3DXMatrixMultiply(&objMat, &objMat, &rotMatY);
+			}
+
+			if ( i == 1)
+			{
+				D3DXMatrixMultiply(&objMat, &rotMatY, &objMat);
 			}
 
 			m_Models[i]->Render(m_D3D->GetDeviceContext());
@@ -725,6 +848,10 @@ bool Graphics::Render(int screenWidth, int screenHeight)
 			//	objMat, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix,
 			//	m_Models[i]->GetTexture(), m_RenderTexture->GetShaderResourceView(),
 			//	m_Light->GetPosition(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor());
+
+			//result = m_ShaderManager->RenderPointLightShader(m_D3D->GetDeviceContext(), m_Models[i]->GetIndexCount(),
+			//	worldMatrix, viewMatrix, projectionMatrix, m_Models[i]->GetTexture(), diffuseColor, lightPosition);
+			//if (!result) { return false; }
 
 			result = m_ShaderManager->RenderLightShader(m_D3D->GetDeviceContext(), m_Models[i]->GetIndexCount(),
 				objMat, viewMatrix, projectionMatrix,
@@ -754,6 +881,21 @@ bool Graphics::Render(int screenWidth, int screenHeight)
 	{
 		return false;
 	}
+	   
+	//Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	result = m_UI->Render(m_D3D->GetDeviceContext(), 0, 0);
+	if (!result)
+	{
+		return false;
+	}
+
+	//Render the bitmap with the texture shader.
+	result = m_ShaderManager->RenderTextureShader(m_D3D->GetDeviceContext(), m_UI->GetIndexCount(),
+		worldMatrix, viewMatrix, orthoMatrix, m_UI->GetTexture());
+	if (!result)
+	{
+		return false;
+	}
 	
 	// Render the mini map.
 	result = m_MiniMap->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix, m_ShaderManager);
@@ -764,6 +906,20 @@ bool Graphics::Render(int screenWidth, int screenHeight)
 
 	// Render the text strings.
 	result = m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
+	if (!result)
+	{
+		return false;
+	}
+
+	cameraPosition = m_Camera->GetPosition();
+	D3DXMatrixTranslation(&worldMatrix, cameraPosition.x, cameraPosition.y, cameraPosition.z + 5.0f);
+	worldMatrix = gunView * worldMatrix;
+	// Put the particle system vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	m_ParticleSystem->Render(m_D3D->GetDeviceContext());
+
+	// Render the model using the texture shader.
+	result = m_ShaderManager->RenderParticleShader(m_D3D->GetDeviceContext(), m_ParticleSystem->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+		m_ParticleSystem->GetTexture());
 	if (!result)
 	{
 		return false;
